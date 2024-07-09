@@ -1,0 +1,168 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ brand.name }} - {{ model.name }} - {{ year.year }}</title>
+    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100vh;
+            overflow-y: hidden;
+        }
+        
+        .parent {
+            overflow-y: scroll;
+            height: 100vh;
+            scroll-snap-type: y mandatory;
+        }
+        
+        .scroll-box {
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
+        }
+        
+        .show {
+            display: block !important;
+        }
+        
+        .vertical-menu img {
+            transition: opacity 0.3s;
+        }
+        
+        .vertical-menu img:hover {
+            opacity: 0.7;
+        }
+    </style>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+
+</head>
+
+<body>
+    <section class="parent">
+
+        {% if messages %} {% for message in messages %} {% endfor %} {% endif %}
+
+
+        <a href="{% url 'core:cart' %}" class="fixed top-0 z-50 left-0 btn btn-neutral m-4 ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        </a>
+
+        <!-- Vertical menu for product navigation -->
+        <div id="vertical-menu" class="vertical-menu hidden fixed top-0 right-0 bottom-0 w-[40vw] z-50 bg-gray-900 p-2">
+            {% for product in products %}
+            <img class="rounded-md mb-2 h-[30vh] object-cover" src="{{product.image.url}}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
+        </div>
+
+        <header class="scroll-box h-screen">
+            <img class="w-full h-full object-cover" src="{{ year.image.url }}" alt="{{ brand.name }} - {{ model.name }} - {{ year.year }}" loading="lazy" />
+            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h1 class="text-3xl text-center font-bold mb-2">{{ brand.name }} - {{ model.name }} - {{ year.year }}</h1>
+            </div>
+        </header>
+
+        <!-- Display products for the year -->
+        {% for product in products %}
+        <div class="product scroll-box relative gap-4 h-screen" data-product-id='{{ product.id }}'>
+            <img class="w-full h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
+                <p class="font-bold mb-2">{{ product.price }} $</p>
+                <div class="flex justify-between gap-2">
+                    <button class="btn btn-primary w-10/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
+                    <button class="btn btn-primary w-2/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" class="stroke-info h-6 w-6 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <dialog id="productBuy{{ product.id }}" class="modal">
+                <div class="modal-box">
+                    <h3 class="text-lg font-bold">{{ product.name }}</h3>
+                    <p class="py-4">Press ESC key or click the button below to close</p>
+                    <div class="modal-action">
+
+                        <button hx-get="{% url 'core:add_to_cart' product.id %}" hx-trigger="click" hx-swap="this" class="btn">Add to Cart</button>
+                        <form method="dialog">
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+
+            <dialog id="productInfo{{ product.id }}" class="modal">
+                <div class="modal-box">
+                    <h3 class="text-lg font-bold">{{ product.name }}</h3>
+                    <p class="py-4">{{ product.description }}</p>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+        </div>
+        {% empty %}
+        <p class="text-gray-600 text-center mt-4 col-span-2">No products found for this year.</p>
+        {% endfor %}
+    </section>
+
+    <script>
+        function scrollToProduct(productId) {
+            const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
+            if (productElement) {
+                productElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const verticalMenu = document.getElementById('vertical-menu');
+
+            document.addEventListener('touchstart', handleTouchStart, false);
+            document.addEventListener('touchmove', handleTouchMove, false);
+
+            let xDown = null;
+            let yDown = null;
+
+            function handleTouchStart(evt) {
+                const firstTouch = evt.touches[0];
+                xDown = firstTouch.clientX;
+                yDown = firstTouch.clientY;
+            }
+
+            function handleTouchMove(evt) {
+                if (!xDown || !yDown) {
+                    return;
+                }
+
+                const xUp = evt.touches[0].clientX;
+                const yUp = evt.touches[0].clientY;
+
+                const xDiff = xDown - xUp;
+                const yDiff = yDown - yUp;
+
+                if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                    if (xDiff > 0) {
+                        verticalMenu.classList.add('show');
+                    } else {
+                        verticalMenu.classList.remove('show');
+                    }
+                }
+                xDown = null;
+                yDown = null;
+            }
+        });
+    </script>
+</body>
+
+</html>

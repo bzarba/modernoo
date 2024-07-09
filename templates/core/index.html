@@ -1,0 +1,27 @@
+<!-- templates/store/home.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Car Parts Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="relative h-screen">
+        <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
+            <source src="{% static 'store/background.mp4' %}" type="video/mp4">
+        </video>
+        <div class="relative z-10 bg-opacity-50 bg-black h-full">
+            <div id="scrollable-list" class="p-8">
+                <div class="flex space-x-4 overflow-x-auto">
+                    {% for brand in brands %}
+                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="h-20 cursor-pointer" hx-get="{% url 'store:models_by_brand' brand.id %}" hx-target="#scrollable-list" hx-swap="innerHTML"> {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

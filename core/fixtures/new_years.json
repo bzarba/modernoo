@@ -1,0 +1,55 @@
+[
+    { "model": "core.year", "pk": 131, "fields": { "year": "2020", "car_model": 31 } },
+    { "model": "core.year", "pk": 132, "fields": { "year": "2021", "car_model": 31 } },
+    { "model": "core.year", "pk": 133, "fields": { "year": "2022", "car_model": 31 } },
+    { "model": "core.year", "pk": 134, "fields": { "year": "2023", "car_model": 31 } },
+    { "model": "core.year", "pk": 135, "fields": { "year": "2024", "car_model": 31 } },
+
+    { "model": "core.year", "pk": 136, "fields": { "year": "2020", "car_model": 32 } },
+    { "model": "core.year", "pk": 137, "fields": { "year": "2021", "car_model": 32 } },
+    { "model": "core.year", "pk": 138, "fields": { "year": "2022", "car_model": 32 } },
+    { "model": "core.year", "pk": 139, "fields": { "year": "2023", "car_model": 32 } },
+    { "model": "core.year", "pk": 140, "fields": { "year": "2024", "car_model": 32 } },
+
+    { "model": "core.year", "pk": 141, "fields": { "year": "2020", "car_model": 33 } },
+    { "model": "core.year", "pk": 142, "fields": { "year": "2021", "car_model": 33 } },
+    { "model": "core.year", "pk": 143, "fields": { "year": "2022", "car_model": 33 } },
+    { "model": "core.year", "pk": 144, "fields": { "year": "2023", "car_model": 33 } },
+    { "model": "core.year", "pk": 145, "fields": { "year": "2024", "car_model": 33 } },
+
+    { "model": "core.year", "pk": 146, "fields": { "year": "2020", "car_model": 34 } },
+    { "model": "core.year", "pk": 147, "fields": { "year": "2021", "car_model": 34 } },
+    { "model": "core.year", "pk": 148, "fields": { "year": "2022", "car_model": 34 } },
+    { "model": "core.year", "pk": 149, "fields": { "year": "2023", "car_model": 34 } },
+    { "model": "core.year", "pk": 150, "fields": { "year": "2024", "car_model": 34 } },
+
+    { "model": "core.year", "pk": 151, "fields": { "year": "2020", "car_model": 35 } },
+    { "model": "core.year", "pk": 152, "fields": { "year": "2021", "car_model": 35 } },
+    { "model": "core.year", "pk": 153, "fields": { "year": "2022", "car_model": 35 } },
+    { "model": "core.year", "pk": 154, "fields": { "year": "2023", "car_model": 35 } },
+    { "model": "core.year", "pk": 155, "fields": { "year": "2024", "car_model": 35 } },
+
+    { "model": "core.year", "pk": 156, "fields": { "year": "2020", "car_model": 36 } },
+    { "model": "core.year", "pk": 157, "fields": { "year": "2021", "car_model": 36 } },
+    { "model": "core.year", "pk": 158, "fields": { "year": "2022", "car_model": 36 } },
+    { "model": "core.year", "pk": 159, "fields": { "year": "2023", "car_model": 36 } },
+    { "model": "core.year", "pk": 160, "fields": { "year": "2024", "car_model": 36 } },
+
+    { "model": "core.year", "pk": 161, "fields": { "year": "2020", "car_model": 37 } },
+    { "model": "core.year", "pk": 162, "fields": { "year": "2021", "car_model": 37 } },
+    { "model": "core.year", "pk": 163, "fields": { "year": "2022", "car_model": 37 } },
+    { "model": "core.year", "pk": 164, "fields": { "year": "2023", "car_model": 37 } },
+    { "model": "core.year", "pk": 165, "fields": { "year": "2024", "car_model": 37 } },
+
+    { "model": "core.year", "pk": 166, "fields": { "year": "2020", "car_model": 38 } },
+    { "model": "core.year", "pk": 167, "fields": { "year": "2021", "car_model": 38 } },
+    { "model": "core.year", "pk": 168, "fields": { "year": "2022", "car_model": 38 } },
+    { "model": "core.year", "pk": 169, "fields": { "year": "2023", "car_model": 38 } },
+    { "model": "core.year", "pk": 170, "fields": { "year": "2024", "car_model": 38 } },
+
+    { "model": "core.year", "pk": 171, "fields": { "year": "2020", "car_model": 39 } },
+    { "model": "core.year", "pk": 172, "fields": { "year": "2021", "car_model": 39 } },
+    { "model": "core.year", "pk": 173, "fields": { "year": "2022", "car_model": 39 } },
+    { "model": "core.year", "pk": 174, "fields": { "year": "2023", "car_model": 39 } },
+    { "model": "core.year", "pk": 175, "fields": { "year": "2024", "car_model": 39 } }
+]

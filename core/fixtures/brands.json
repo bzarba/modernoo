@@ -1,0 +1,7 @@
+[
+    { "model": "core.brand", "pk": 6, "fields": { "name": "Toyota", "logo": "brands/logos/toyota-logo.png", "slug": "toyota" } },
+    { "model": "core.brand", "pk": 7, "fields": { "name": "Honda", "logo": "brands/logos/honda-logo.png", "slug": "honda" } },
+    { "model": "core.brand", "pk": 8, "fields": { "name": "Ford", "logo": "brands/logos/ford-logo.png", "slug": "ford" } },
+    { "model": "core.brand", "pk": 9, "fields": { "name": "Chevrolet", "logo": "brands/logos/chevrolet-logo.png", "slug": "chevrolet" } },
+    { "model": "core.brand", "pk": 10, "fields": { "name": "Tesla", "logo": "brands/logos/tesla-logo.png", "slug": "tesla" } }
+]

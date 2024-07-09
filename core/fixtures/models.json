@@ -1,0 +1,55 @@
+[
+    { "model": "core.carmodel", "pk": 6, "fields": { "name": "Camry", "brand": 6, "slug": "camry" } },
+    { "model": "core.carmodel", "pk": 7, "fields": { "name": "Corolla", "brand": 6, "slug": "corolla" } },
+    { "model": "core.carmodel", "pk": 8, "fields": { "name": "Prius", "brand": 6, "slug": "prius" } },
+    { "model": "core.carmodel", "pk": 9, "fields": { "name": "RAV4", "brand": 6, "slug": "rav4" } },
+    { "model": "core.carmodel", "pk": 10, "fields": { "name": "Highlander", "brand": 6, "slug": "highlander" } },
+
+    { "model": "core.carmodel", "pk": 11, "fields": { "name": "Accord", "brand": 7, "slug": "accord" } },
+    { "model": "core.carmodel", "pk": 12, "fields": { "name": "Civic", "brand": 7, "slug": "civic" } },
+    { "model": "core.carmodel", "pk": 13, "fields": { "name": "CR-V", "brand": 7, "slug": "cr-v" } },
+    { "model": "core.carmodel", "pk": 14, "fields": { "name": "Pilot", "brand": 7, "slug": "pilot" } },
+    { "model": "core.carmodel", "pk": 15, "fields": { "name": "Odyssey", "brand": 7, "slug": "odyssey" } },
+
+    { "model": "core.carmodel", "pk": 16, "fields": { "name": "Mustang", "brand": 8, "slug": "mustang" } },
+    { "model": "core.carmodel", "pk": 17, "fields": { "name": "F-150", "brand": 8, "slug": "f-150" } },
+    { "model": "core.carmodel", "pk": 18, "fields": { "name": "Explorer", "brand": 8, "slug": "explorer" } },
+    { "model": "core.carmodel", "pk": 19, "fields": { "name": "Escape", "brand": 8, "slug": "escape" } },
+    { "model": "core.carmodel", "pk": 20, "fields": { "name": "Fusion", "brand": 8, "slug": "fusion" } },
+
+    { "model": "core.carmodel", "pk": 21, "fields": { "name": "Silverado", "brand": 9, "slug": "silverado" } },
+    { "model": "core.carmodel", "pk": 22, "fields": { "name": "Malibu", "brand": 9, "slug": "malibu" } },
+    { "model": "core.carmodel", "pk": 23, "fields": { "name": "Equinox", "brand": 9, "slug": "equinox" } },
+    { "model": "core.carmodel", "pk": 24, "fields": { "name": "Tahoe", "brand": 9, "slug": "tahoe" } },
+    { "model": "core.carmodel", "pk": 25, "fields": { "name": "Traverse", "brand": 9, "slug": "traverse" } },
+
+    { "model": "core.carmodel", "pk": 26, "fields": { "name": "Model S", "brand": 10, "slug": "model-s" } },
+    { "model": "core.carmodel", "pk": 27, "fields": { "name": "Model 3", "brand": 10, "slug": "model-3" } },
+    { "model": "core.carmodel", "pk": 28, "fields": { "name": "Model X", "brand": 10, "slug": "model-x" } },
+    { "model": "core.carmodel", "pk": 29, "fields": { "name": "Model Y", "brand": 10, "slug": "model-y" } },
+    { "model": "core.carmodel", "pk": 30, "fields": { "name": "Cybertruck", "brand": 10, "slug": "cybertruck" } },
+
+    { "model": "core.carmodel", "pk": 31, "fields": { "name": "3 Series", "brand": 4, "slug": "bmw-3-series" } },
+    { "model": "core.carmodel", "pk": 32, "fields": { "name": "5 Series", "brand": 4, "slug": "bmw-5-series" } },
+    { "model": "core.carmodel", "pk": 33, "fields": { "name": "X3", "brand": 4, "slug": "bmw-x3" } },
+    { "model": "core.carmodel", "pk": 34, "fields": { "name": "X5", "brand": 4, "slug": "bmw-x5" } },
+    { "model": "core.carmodel", "pk": 35, "fields": { "name": "X7", "brand": 4, "slug": "bmw-x7" } },
+
+    { "model": "core.carmodel", "pk": 36, "fields": { "name": "Golf", "brand": 3, "slug": "volkswagen-golf" } },
+    { "model": "core.carmodel", "pk": 37, "fields": { "name": "Jetta", "brand": 3, "slug": "volkswagen-jetta" } },
+    { "model": "core.carmodel", "pk": 38, "fields": { "name": "Passat", "brand": 3, "slug": "volkswagen-passat" } },
+    { "model": "core.carmodel", "pk": 39, "fields": { "name": "Tiguan", "brand": 3, "slug": "volkswagen-tiguan" } },
+    { "model": "core.carmodel", "pk": 40, "fields": { "name": "Atlas", "brand": 3, "slug": "volkswagen-atlas" } },
+
+    { "model": "core.carmodel", "pk": 41, "fields": { "name": "Altima", "brand": 2, "slug": "nissan-altima" } },
+    { "model": "core.carmodel", "pk": 42, "fields": { "name": "Sentra", "brand": 2, "slug": "nissan-sentra" } },
+    { "model": "core.carmodel", "pk": 43, "fields": { "name": "Rogue", "brand": 2, "slug": "nissan-rogue" } },
+    { "model": "core.carmodel", "pk": 44, "fields": { "name": "Pathfinder", "brand": 2, "slug": "nissan-pathfinder" } },
+    { "model": "core.carmodel", "pk": 45, "fields": { "name": "Titan", "brand": 2, "slug": "nissan-titan" } },
+
+    { "model": "core.carmodel", "pk": 46, "fields": { "name": "S60", "brand": 1, "slug": "volvo-s60" } },
+    { "model": "core.carmodel", "pk": 47, "fields": { "name": "XC40", "brand": 1, "slug": "volvo-xc40" } },
+    { "model": "core.carmodel", "pk": 48, "fields": { "name": "XC60", "brand": 1, "slug": "volvo-xc60" } },
+    { "model": "core.carmodel", "pk": 49, "fields": { "name": "XC90", "brand": 1, "slug": "volvo-xc90" } },
+    { "model": "core.carmodel", "pk": 50, "fields": { "name": "V90", "brand": 1, "slug": "volvo-v90" } }
+]

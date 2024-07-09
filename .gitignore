@@ -1,0 +1,8 @@
+node_modules/
+docs.txt
+.venv/
+package.json
+package-lock.json
+tailwind.config.js
+postcss.config.js
+staticfiles/

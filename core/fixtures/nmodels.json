@@ -1,0 +1,25 @@
+[
+    { "model": "core.carmodel", "pk": 31, "fields": { "name": "3 Series", "brand": 4, "slug": "bmw-3-series" } },
+    { "model": "core.carmodel", "pk": 32, "fields": { "name": "5 Series", "brand": 4, "slug": "bmw-5-series" } },
+    { "model": "core.carmodel", "pk": 33, "fields": { "name": "X3", "brand": 4, "slug": "bmw-x3" } },
+    { "model": "core.carmodel", "pk": 34, "fields": { "name": "X5", "brand": 4, "slug": "bmw-x5" } },
+    { "model": "core.carmodel", "pk": 35, "fields": { "name": "X7", "brand": 4, "slug": "bmw-x7" } },
+
+    { "model": "core.carmodel", "pk": 36, "fields": { "name": "Golf", "brand": 3, "slug": "volkswagen-golf" } },
+    { "model": "core.carmodel", "pk": 37, "fields": { "name": "Jetta", "brand": 3, "slug": "volkswagen-jetta" } },
+    { "model": "core.carmodel", "pk": 38, "fields": { "name": "Passat", "brand": 3, "slug": "volkswagen-passat" } },
+    { "model": "core.carmodel", "pk": 39, "fields": { "name": "Tiguan", "brand": 3, "slug": "volkswagen-tiguan" } },
+    { "model": "core.carmodel", "pk": 40, "fields": { "name": "Atlas", "brand": 3, "slug": "volkswagen-atlas" } },
+
+    { "model": "core.carmodel", "pk": 41, "fields": { "name": "Altima", "brand": 2, "slug": "nissan-altima" } },
+    { "model": "core.carmodel", "pk": 42, "fields": { "name": "Sentra", "brand": 2, "slug": "nissan-sentra" } },
+    { "model": "core.carmodel", "pk": 43, "fields": { "name": "Rogue", "brand": 2, "slug": "nissan-rogue" } },
+    { "model": "core.carmodel", "pk": 44, "fields": { "name": "Pathfinder", "brand": 2, "slug": "nissan-pathfinder" } },
+    { "model": "core.carmodel", "pk": 45, "fields": { "name": "Titan", "brand": 2, "slug": "nissan-titan" } },
+
+    { "model": "core.carmodel", "pk": 46, "fields": { "name": "S60", "brand": 1, "slug": "volvo-s60" } },
+    { "model": "core.carmodel", "pk": 47, "fields": { "name": "XC40", "brand": 1, "slug": "volvo-xc40" } },
+    { "model": "core.carmodel", "pk": 48, "fields": { "name": "XC60", "brand": 1, "slug": "volvo-xc60" } },
+    { "model": "core.carmodel", "pk": 49, "fields": { "name": "XC90", "brand": 1, "slug": "volvo-xc90" } },
+    { "model": "core.carmodel", "pk": 50, "fields": { "name": "V90", "brand": 1, "slug": "volvo-v90" } }
+]

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="px-4 py-8 h-screen bg-bottom" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
+    <a href="{% url 'core:home' %}" class="fixed top-0 z-50 left-0 btn btn-neutral m-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2">
+            <path d="M9 14L4 9l5-5"/>
+            <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
+        </svg>
+    </a>
+
+    <h1 class="font-bold text-3xl text-center mb-8">Your Cart</h1>
+
+    {% if cart %}
+    <ul role="list" class="divide-y divide-gray-200">
+        {% for product_id, item in cart.items %}
+        <li class="flex border rounded-md">
+            <div class="h-28 w-28 flex-shrink-0 overflow-hidden rounded-md rounded-r-none border border-gray-200">
+                <img src="{{ item.image }}" alt="{{ item.name }}" class="h-full w-full object-cover object-center">
+            </div>
+
+            <div class="py-4 px-4 flex flex-1 flex-col">
+                <div>
+                    <div class="flex justify-between text-base font-medium text-gray-900">
+                        <h3>
+                            <a href="#">{{ item.name }}</a>
+                        </h3>
+                        <p class="ml-4">${{ item.price }}</p>
+                    </div>
+                </div>
+                <div class="flex flex-1 items-center justify-between text-sm">
+                    <form action="{% url 'core:update_cart' product_id %}" method="post">
+                        {% csrf_token %}
+                        <!-- <label for="quantity_{{ product_id }}" class="text-gray-500">Qty</label> -->
+                        <input type="number" name="quantity" id="quantity_{{ product_id }}" value="{{ item.quantity }}" min="1" class="input input-bordered input-sm text-center w-[60px]">
+                        <button class="btn btn-sm btn-neutral text-white" type="submit">Update</button>
+                    </form>
+                    <form action="{% url 'core:remove_from_cart' product_id %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-error text-white" type="submit">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-center text-gray-500">Your cart is empty.</p>
+    {% endif %}
+
+    <div class="fixed w-full bottom-0 left-0 right-0 p-4">
+        <a class="btn btn-neutral w-full" href="{% url 'core:checkout' %}">Checkout</a>
+    </div>
+</body>
+
+</html>
