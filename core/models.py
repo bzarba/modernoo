@@ -1,12 +1,15 @@
 from django.db import models
 # from django.utils.text import slugify
 from slugify import slugify
+from cloudinary.models import CloudinaryField
+import cloudinary.api
+import cloudinary.uploader
 
 # slugifyer = Slugify()
 
 class Brand(models.Model):
     name = models.CharField(max_length=255)
-    logo = models.ImageField(upload_to='brands/logos/')
+    logo = CloudinaryField('image')
     slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -34,7 +37,7 @@ from django.db import models
 
 class Year(models.Model):
     year = models.IntegerField()
-    image = models.ImageField(upload_to='year_images/', null=True, blank=True)
+    image = CloudinaryField('image')
     car_model = models.ForeignKey('CarModel', related_name='years', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,7 +56,7 @@ class Product(models.Model):
     year = models.ForeignKey(Year, related_name='products', on_delete=models.CASCADE)
     # options = models.ManyToManyField(Option, related_name='options', blank=True, null=True)
     slug = models.SlugField(default="", null=False, db_index=True)
-    image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    image = CloudinaryField('image')
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -90,4 +93,4 @@ class OrderItem(models.Model):
         return str(self.id)
     
 class Setting(models.Model):
-    home_video = models.ImageField(upload_to='settings/', null=True, blank=True)
+    home_video = CloudinaryField('video')
