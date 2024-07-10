@@ -37,7 +37,7 @@
 
     <div class="relative h-screen lg:max-w-lg lg:mx-auto">
         <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
-            <source src="/static/videos/background.mp4" type="video/mp4">
+            <source src="{{settings.home_video.url}}" type="video/mp4">
         </video>
         <div class="absolute bottom-0 right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4">
             <div id="scrollable-list" class="overflow-y-auto" hx-trigger="load" hx-get="{% url 'core:brands_list' %}">
