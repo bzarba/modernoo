@@ -9,7 +9,7 @@ import cloudinary.uploader
 
 class Brand(models.Model):
     name = models.CharField(max_length=255)
-    logo = CloudinaryField('image')
+    logo = CloudinaryField(resource_type='image')
     slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -37,7 +37,7 @@ from django.db import models
 
 class Year(models.Model):
     year = models.IntegerField()
-    image = CloudinaryField('image')
+    image = CloudinaryField(resource_type='image')
     car_model = models.ForeignKey('CarModel', related_name='years', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -56,7 +56,7 @@ class Product(models.Model):
     year = models.ForeignKey(Year, related_name='products', on_delete=models.CASCADE)
     # options = models.ManyToManyField(Option, related_name='options', blank=True, null=True)
     slug = models.SlugField(default="", null=False, db_index=True)
-    image = CloudinaryField('image')
+    image = CloudinaryField(resource_type='image')
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -93,4 +93,4 @@ class OrderItem(models.Model):
         return str(self.id)
     
 class Setting(models.Model):
-    home_video = CloudinaryField('raw')
+    home_video = CloudinaryField(resource_type='video')
