@@ -15,4 +15,5 @@ urlpatterns = [
     path('<str:brand_slug>/', views.models_list, name='models_list'),
     path('<str:brand_slug>/<str:model_slug>/', views.years_list, name='years_list'),
     path('<str:brand_slug>/<str:model_slug>/<int:year>/', views.products_list, name='products_list'),
+    path('download-backup/', views.download_backup, name='download_backup'),
 ]

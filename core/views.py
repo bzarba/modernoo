@@ -3,6 +3,9 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_POST
 from .models import Brand, CarModel, Year, Product, Setting
 import urllib.parse 
+from django.core import management
+from django.conf import settings
+import os
 
 def home(request):
     brands = Brand.objects.all()
@@ -123,3 +126,22 @@ def checkout(request):
     }
     telegram_url = f"{telegram_base_url}?{urllib.parse.urlencode(params)}"
     return redirect(telegram_url)
+
+def download_backup(request):
+    # Define paths to backup files
+    db_backup_file = os.path.join(settings.BASE_DIR, 'backup.json')
+
+    # Create a new database backup
+    management.call_command('dumpdata', '--output', db_backup_file)
+    
+    # Serve the backup JSON file for download
+    if os.path.exists(db_backup_file):
+        with open(db_backup_file, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename=backup.json'
+            
+            
+            return response
+    else:
+        return HttpResponse("Backup file not found", status=404)
+    
