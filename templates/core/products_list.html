@@ -97,7 +97,7 @@
                     <p class="py-4">Press ESC key or click the button below to close</p>
                     <div class="modal-action">
 
-                        <button hx-get="{% url 'core:add_to_cart' product.id %}" hx-trigger="click" hx-swap="this" class="btn">Add to Cart</button>
+                        <button hx-get="{% url 'core:add_to_cart' product.id %}" hx-trigger="click" hx-swap="outerHTML" class="btn">Add to Cart</button>
                         <form method="dialog">
                             <button class="btn">Close</button>
                         </form>
