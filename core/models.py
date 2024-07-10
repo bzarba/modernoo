@@ -93,4 +93,4 @@ class OrderItem(models.Model):
         return str(self.id)
     
 class Setting(models.Model):
-    home_video = CloudinaryField('video')
+    home_video = CloudinaryField('raw')
