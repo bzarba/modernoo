@@ -10,12 +10,8 @@
 </head>
 
 <body class="px-4 py-8 h-screen bg-bottom" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
-    <a href="{% url 'core:home' %}" class="fixed top-0 z-50 left-0 btn btn-neutral m-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2">
-            <path d="M9 14L4 9l5-5"/>
-            <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
-        </svg>
-    </a>
+    <!-- Topbar -->
+    {% include "partials/topbar.html" %}
 
     <h1 class="font-bold text-3xl text-center mb-8">Your Cart</h1>
 

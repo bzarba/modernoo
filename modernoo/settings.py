@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-     'cloudinary',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.settings_middleware.SettingsMiddleware',
 ]
 
 ROOT_URLCONF = 'modernoo.urls'

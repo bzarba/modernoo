@@ -94,3 +94,10 @@ class OrderItem(models.Model):
     
 class Setting(models.Model):
     home_video = CloudinaryField(resource_type='video')
+    about_us = models.TextField(null=True, blank=True)
+    instagram_url = models.CharField(max_length=30, null=True)
+    facebook_url = models.CharField(max_length=30, null=True)
+    email = models.CharField(max_length=30, null=True)
+
+    def __str__(self) -> str:
+        return 'Setting'

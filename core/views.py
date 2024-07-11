@@ -9,8 +9,7 @@ import os
 
 def home(request):
     brands = Brand.objects.all()
-    settings = Setting.objects.first()
-    return render(request, 'core/home.html', {'brands': brands, 'settings': settings})
+    return render(request, 'core/home.html', {'brands': brands})
 
 def brands_list(request):
   brands = Brand.objects.all()

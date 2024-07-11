@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,16 +37,45 @@
         .vertical-menu img:hover {
             opacity: 0.7;
         }
+        
+        .swipe-arrow {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: red;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .show-arrow {
+            opacity: 1;
+        }
     </style>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
 </head>
 
 <body>
     <section class="parent">
+        {% if messages %} {% for message in messages %} {% endfor %} {% endif %}
+
+        <div class="fixed top-0 z-50 left-0 m-4 flex gap-4">
+            <a href="{% url 'core:home' %}" class="btn btn-neutral">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2">
+                    <path d="M9 14L4 9l5-5"/>
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                </svg>
+            </a>
+            <a href="{% url 'core:cart' %}" class="btn btn-neutral ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            </a>
+        </div>
 
         <!-- Vertical menu for product navigation -->
-        <div id="vertical-menu" class="vertical-menu hidden fixed top-0 right-0 bottom-0 w-[40vw] z-50 bg-gray-900 p-2">
+        <div id="vertical-menu" class="vertical-menu hidden fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
             {% for product in products %}
-            <img class="rounded-md mb-2" src="{% static 'placeholder.jpg' %}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
+            <img class="rounded-md mb-2 h-[15vh] object-cover" src="{{product.image.url}}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
         </div>
 
         <header class="scroll-box h-screen">
@@ -60,8 +88,7 @@
         <!-- Display products for the year -->
         {% for product in products %}
         <div class="product scroll-box relative gap-4 h-screen" data-product-id='{{ product.id }}'>
-            <img class="w-full h-full object-cover" src="{% static 'placeholder.jpg' %}" alt="{{ product.name }}" loading="lazy" />
-
+            <img class="w-full h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
             <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
                 <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
                 <p class="font-bold mb-2">{{ product.price }} $</p>
@@ -79,11 +106,8 @@
                 <div class="modal-box">
                     <h3 class="text-lg font-bold">{{ product.name }}</h3>
                     <p class="py-4">Press ESC key or click the button below to close</p>
-                    <form action="{% url 'core:add_to_cart' product.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn">Add to Cart</button>
-                    </form>
                     <div class="modal-action">
+                        <button hx-get="{% url 'core:add_to_cart' product.id %}" hx-trigger="click" hx-swap="outerHTML" class="btn">Add to Cart</button>
                         <form method="dialog">
                             <button class="btn">Close</button>
                         </form>
@@ -106,9 +130,22 @@
         {% empty %}
         <p class="text-gray-600 text-center mt-4 col-span-2">No products found for this year.</p>
         {% endfor %}
+
+        <div class="swipe-arrow" id="swipe-arrow">
+            <img class="w-16 animate-pulse" src="{% static 'imgs/swipe-left.png' %}" alt="">
+        </div>
     </section>
 
     <script>
+        function scrollToProduct(productId) {
+            const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
+            if (productElement) {
+                productElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const verticalMenu = document.getElementById('vertical-menu');
 
@@ -146,14 +183,12 @@
                 yDown = null;
             }
 
-            function scrollToProduct(productId) {
-                const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
-                if (productElement) {
-                    productElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            }
+            // Show the arrow for 1 second on page load
+            const swipeArrow = document.getElementById('swipe-arrow');
+            swipeArrow.classList.add('show-arrow');
+            setTimeout(() => {
+                swipeArrow.classList.remove('show-arrow');
+            }, 3000);
         });
     </script>
 </body>

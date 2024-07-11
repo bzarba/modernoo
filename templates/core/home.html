@@ -31,13 +31,14 @@
 </head>
 
 <body class="overflow-hidden">
-    <a href="{% url 'core:cart' %}" class="fixed top-0 z-50 left-0 btn btn-neutral m-4 ">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-    </a>
+    <!-- Messages -->
+    {% if messages %} {% for message in messages %} {% endfor %} {% endif %}
+    <!-- Topbar -->
+    {% include "partials/topbar.html" %}
 
     <div class="relative h-screen lg:max-w-lg lg:mx-auto">
         <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
-            <source src="{{settings.home_video.url}}" type="video/mp4">
+            <source src="{{request.settings.home_video.url}}" type="video/mp4">
         </video>
         <div class="absolute bottom-0 right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4">
             <div id="scrollable-list" class="overflow-y-auto" hx-trigger="load" hx-get="{% url 'core:brands_list' %}">
