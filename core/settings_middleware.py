@@ -5,7 +5,7 @@ class SettingsMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        settings = Setting.objects.first()
+        settings = Setting.objects.filter(active=True).first()
 
         request.settings = settings
 
