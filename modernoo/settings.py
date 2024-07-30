@@ -145,3 +145,22 @@ cloud_name = "ddrsbovxs",
 api_key = "175375413271139",
 api_secret = "tNZv2PWalfYGCwQYk8BY1m3P9e0",
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'django_error.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
