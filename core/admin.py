@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Brand, CarModel, Product, Setting
+from .models import Brand, CarModel, Product, Setting, Option
 from django.contrib.auth.models import User, Group
 
 # Unregister default User and Group models
@@ -10,6 +10,8 @@ admin.site.unregister(Group)
 admin.site.name = 'Modernoo'
 admin.site.site_header = 'Modernoo Administration'
 admin.site.site_title = 'Modernoo'
+
+admin.site.register(Option)
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):

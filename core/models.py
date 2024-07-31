@@ -29,10 +29,20 @@ class CarModel(models.Model):
         return self.name
 
 class Option(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255) # like color, size, type,
+    choices = models.CharField(max_length=255, null=True) #separated by commas like red, blue, green
     
     def __str__(self):
         return self.name
+    
+    def get_choices_list(self):
+        """Returns choices as a list."""
+        return [choice.strip() for choice in self.choices.split(',')] if self.choices else []
+
+    def set_choices_list(self, choices_list):
+        """Sets choices from a list."""
+        self.choices = ','.join(choice.strip() for choice in choices_list)
+        self.save()
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -43,6 +53,7 @@ class Product(models.Model):
     car_model = models.ForeignKey(CarModel, related_name='products', on_delete=models.CASCADE, null=True)
     slug = models.SlugField(default="", null=False, db_index=True)
     image = CloudinaryField(resource_type='image')
+    options = models.ManyToManyField(Option)
 
     def save(self, *args, **kwargs):
         if not self.slug:

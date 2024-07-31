@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +25,7 @@
         }
         
         .parent.reduced {
-            width: 80%;
+            width: 80% !important;
         }
         
         .scroll-box {
@@ -64,16 +65,18 @@
 </head>
 
 <body>
-    <section class="parent h-screen lg:max-w-lg lg:mx-auto" id="parent-section">
+    <section class="parent reduced h-screen lg:max-w-lg lg:mx-auto" id="parent-section reduced">
         <!-- Messages -->
-        {% if messages %} {% for message in messages %} {% endfor %} {% endif %}
+        {% if messages %} {% for message in messages %} 
+        
+        {% endfor %} {% endif %}
         <!-- Topbar -->
         {% include "partials/topbar.html" %}
 
         <!-- Vertical menu for product navigation -->
-        <div id="vertical-menu" class="vertical-menu hidden fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
+        <div id="vertical-menu" class="vertical-menu  fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
             {% for product in products %}
-            <img class="rounded-md mb-2 h-[15vh] object-cover" src="{{product.image.url}}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
+            <img class="rounded-md mb-2 h-[15vh] w-full object-cover" src="{{product.image.url}}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
         </div>
 
      
@@ -83,7 +86,7 @@
         <div class="product scroll-box relative gap-4 h-screen" data-product-id='{{ product.id }}'>
             <img class="w-full h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
 
-            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+            <div class="absolute bottom-8 left-0 right-0 p-4 text-white">
                 <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
                 <p class="font-bold mb-2">{{ product.price }} $</p>
                 <div class="flex gap-2">
@@ -94,20 +97,39 @@
                 </div>
             </div>
 
+            
+
             <dialog id="productBuy{{ product.id }}" class="modal">
                 <div class="modal-box">
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                      </form>
                     <h3 class="text-lg font-bold">{{ product.name }}</h3>
-                    <p class="py-4">Press ESC key or click the button below to close</p>
                     <div class="modal-action">
-
-                        <button hx-get="{% url 'core:add_to_cart' product.id %}" hx-trigger="click" hx-swap="outerHTML" class="btn">Add to Cart</button>
-                        <form method="dialog">
-                            <button class="btn">Close</button>
+                        <!-- Form for adding product to cart -->
+                        <form class="w-full" hx-get="{% url 'core:edit_cart' %}" hx-target="#atc_{{product.id}}" hx-swap="outerHTML">
+                            {% for option in product.options.all %}
+                            <div class="flex gap-4 items-center mb-2">
+                                <label class="font-bold" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                <select class="select select-sm select-bordered" name="option__{{ option.name }}" id="option__{{ option.name }}">
+                                    {% for choice in option.choices|split:"," %}
+                                    <option value="{{ choice }}">{{ choice }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                            <input type="number" name="quantity" id="quantity" class="input w-16 input-bordered" value="1">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button id="atc_{{product.id}}" type="submit" class="btn btn-accent">Add to Cart</button>
                         </form>
+                        <!-- Form for closing the dialog -->
+                        <label class="modal-backdrop" for="my_modal_7">Close</label>
+
                     </div>
                 </div>
             </dialog>
-
+            
+            
             <dialog id="productInfo{{ product.id }}" class="modal">
                 <div class="modal-box">
                     <h3 class="text-lg font-bold">{{ product.name }}</h3>
@@ -139,53 +161,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const verticalMenu = document.getElementById('vertical-menu');
-            const parentSection = document.getElementById('parent-section');
-
-            document.addEventListener('touchstart', handleTouchStart, false);
-            document.addEventListener('touchmove', handleTouchMove, false);
-
-            let xDown = null;
-            let yDown = null;
-
-            function handleTouchStart(evt) {
-                const firstTouch = evt.touches[0];
-                xDown = firstTouch.clientX;
-                yDown = firstTouch.clientY;
-            }
-
-            function handleTouchMove(evt) {
-                if (!xDown || !yDown) {
-                    return;
-                }
-
-                const xUp = evt.touches[0].clientX;
-                const yUp = evt.touches[0].clientY;
-
-                const xDiff = xDown - xUp;
-                const yDiff = yDown - yUp;
-
-                if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                    if (xDiff > 0) {
-                        verticalMenu.classList.add('show');
-                        parentSection.classList.add('reduced');
-                    } else {
-                        verticalMenu.classList.remove('show');
-                        parentSection.classList.remove('reduced');
-                    }
-                }
-                xDown = null;
-                yDown = null;
-            }
-
-            // Show the arrow for 1 second on page load
-            const swipeArrow = document.getElementById('swipe-arrow');
-            swipeArrow.classList.add('show-arrow');
-            setTimeout(() => {
-                swipeArrow.classList.remove('show-arrow');
-            }, 3000);
-        });
+    
     </script>
 </body>
 

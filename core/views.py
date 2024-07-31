@@ -7,6 +7,7 @@ from django.core import management
 from django.conf import settings
 import os
 from datetime import datetime
+from django.contrib import messages
 
 def home(request):
     brands = Brand.objects.all()
@@ -34,7 +35,7 @@ def years_list(request, brand_slug, model_slug):
 
     # Generate a list of years from 1990 to the current year
     years = list(range(1990, current_year + 1))
-    years.reverse
+    years.reverse()
 
     context = {
         'brand': brand,
@@ -53,6 +54,8 @@ def products_list(request, brand_slug, model_slug, year):
         car_model=model,
         years__contains=str(year)
     )
+    
+    # print(products.all()[1].options.first())
 
     context = {
         'brand': brand,
@@ -63,23 +66,30 @@ def products_list(request, brand_slug, model_slug, year):
 
     return render(request, 'core/products_list.html', context)
 
-def add_to_cart(request, product_id):
+def edit_cart(request: HttpRequest):
+    product_id = request.GET.get('product_id')
+    quantity = request.GET.get('quantity')
+    options = {key: value for key, value in request.GET.items() if key.startswith('option__')}
+    
     product = get_object_or_404(Product, pk=product_id)
     cart = request.session.get('cart', {})
 
     cart_item = cart.get(str(product_id))
     if cart_item:
-        cart_item['quantity'] += 1
+        cart_item['quantity'] += int(quantity)
+        cart_item['options'] = options
     else:
         cart[str(product_id)] = {
             'name': product.name,
             'price': float(product.price),
-            'quantity': 1,
+            'quantity': int(quantity),
+            'options': options,
             'image': product.image.url if product.image else ''
         }
 
     request.session['cart'] = cart
-    return HttpResponse('<button class="btn btn-neutral" disabled="true">Added</button>')
+    messages.add_message(request, message='Added Successfully')
+    return HttpResponse('<button class="btn btn-accent">Add To Cart</button>')
 
 def cart(request):
     cart = request.session.get('cart', {})
