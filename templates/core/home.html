@@ -41,7 +41,7 @@
         <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
             <source src="{{request.settings.home_video.url}}" type="video/mp4">
         </video>
-        <div class="absolute bottom-[20px] right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4" style="height: 60vh !important; bottom: 40px !important;">
+        <div class="absolute bottom-[60px] right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4" style="height: 60vh !important; bottom: 60px !important;">
             <div id="scrollable-list" class="overflow-y-auto" hx-trigger="load" hx-get="{% url 'core:brands_list' %}">
 
             </div>
