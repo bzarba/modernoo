@@ -64,7 +64,11 @@
     {% endif %}
 
     <div class="fixed w-full bottom-0 left-0 p-4 shadow-md">
-        <a class="btn btn-neutral w-full" onclick="my_modal_1.showModal()">Checkout</a>
+        {% if cart %}
+            <a class="btn btn-neutral w-full" onclick="my_modal_1.showModal()">Checkout</a>
+        {% else %}
+            <a class="btn btn-neutral w-full" disabled="true" onclick="my_modal_1.showModal()">Checkout</a>
+        {% endif %}
     </div>
 
 
