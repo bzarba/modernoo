@@ -1,155 +1,152 @@
+# views.py
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.decorators.http import require_POST
-from .models import Brand, CarModel, Product
-import urllib.parse
+from django.contrib import messages
 from django.core import management
 from django.conf import settings
-import os
 from datetime import datetime
-from django.contrib import messages
+import os
+
+from .models import Brand, CarModel, Product, Order, OrderItem
+from .cart import get_or_create_cart_order, add_to_cart, remove_from_cart, update_cart, get_cart_items, get_cart_item_count
+
 
 def home(request):
+    """Render the home page with a list of brands."""
     brands = Brand.objects.all()
     return render(request, 'core/home.html', {'brands': brands})
 
+
 def brands_list(request):
+    """Render a list of brands."""
     brands = Brand.objects.all()
     return render(request, 'partials/brands.html', {'brands': brands})
 
+
 def models_list(request, brand_slug):
+    """Render a list of car models for a given brand."""
     brand = get_object_or_404(Brand, slug=brand_slug)
-    models = brand.models.all()  # Retrieve models associated with the brand
-    context = {
-        'brand': brand,
-        'models': models,
-    }
-    return render(request, 'partials/models.html', context)
+    models = brand.models.all()
+    return render(request, 'partials/models.html', {'brand': brand, 'models': models})
+
 
 def years_list(request, brand_slug, model_slug):
+    """Render a list of years for a given brand and model."""
     brand = get_object_or_404(Brand, slug=brand_slug)
     model = get_object_or_404(CarModel, slug=model_slug, brand=brand)
     
-    # Get the current year
     current_year = datetime.now().year
-
-    # Generate a list of years from 1990 to the current year
     years = list(range(1990, current_year + 1))
     years.reverse()
 
-    context = {
-        'brand': brand,
-        'model': model,
-        'years': years,
-    }
-    return render(request, 'partials/years.html', context)
+    return render(request, 'partials/years.html', {'brand': brand, 'model': model, 'years': years})
+
 
 def products_list(request, brand_slug, model_slug, year):
-    # Retrieve the brand and model using slugs
+    """Render a list of products for a given brand, model, and year."""
     brand = get_object_or_404(Brand, slug=brand_slug)
     model = get_object_or_404(CarModel, slug=model_slug, brand=brand)
-
-    # Filter products by the specified year
-    products = Product.objects.filter(
-        car_model=model,
-        years__contains=str(year)
-    )
     
-    # print(products.all()[1].options.first())
+    products = Product.objects.filter(car_model=model, years__contains=str(year))
 
-    context = {
+    return render(request, 'core/products_list.html', {
         'brand': brand,
         'model': model,
         'year': year,
-        'products': products,
-    }
+        'products': products
+    })
 
-    return render(request, 'core/products_list.html', context)
 
-def edit_cart(request: HttpRequest):
-    product_id = request.GET.get('product_id')
-    quantity = request.GET.get('quantity')
-    options = {key: value for key, value in request.GET.items() if key.startswith('option__')}
-    
-    product = get_object_or_404(Product, pk=product_id)
-    cart = request.session.get('cart', {})
+def edit_cart(request):
+    """Add or update an item in the cart."""
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = request.POST.get('quantity')
+        options = {key: value for key, value in request.POST.items() if key.startswith('option_')}
+        
+        add_to_cart(request, product_id, quantity, options)
 
-    cart_item = cart.get(str(product_id))
-    if cart_item:
-        cart_item['quantity'] += int(quantity)
-        cart_item['options'] = options
-    else:
-        cart[str(product_id)] = {
-            'name': product.name,
-            'price': float(product.price),
-            'quantity': int(quantity),
-            'options': options,
-            'image': product.image.url if product.image else ''
-        }
+        messages.success(request, 'Added Successfully')
+        # print(12)
 
-    request.session['cart'] = cart
-    messages.add_message(request, message='Added Successfully')
-    return HttpResponse('<button class="btn btn-accent">Add To Cart</button>')
+        cart_item_count = get_cart_item_count(request)
+        print(cart_item_count)
+        return render(request, 'partials/cart_number.html', {'cart_item_count': cart_item_count})
 
 def cart(request):
-    cart = request.session.get('cart', {})
-    context = {
-        'cart': cart,
-    }
-    return render(request, 'core/cart.html', context)
+    """Render the cart page with items."""
+    print(get_cart_items(request))
+    cart_items = get_cart_items(request)
+    return render(request, 'core/cart.html', {'cart': cart_items})
+
 
 def remove_from_cart(request, product_id):
-    product_id = str(product_id)
-    cart = request.session.get('cart', {})
-
-    if product_id in cart:
-        del cart[product_id]
-        request.session['cart'] = cart
-
+    """Remove an item from the cart."""
+    remove_from_cart(request, product_id)
     return redirect('core:cart')
+
 
 def update_cart(request, product_id):
-    product_id = str(product_id)
-    cart = request.session.get('cart', {})
+    """Update the quantity of an item in the cart."""
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
-        if quantity < 1:
-            del cart[product_id]
-        else:
-            cart[product_id]['quantity'] = quantity
+        update_cart(request, product_id, quantity)
 
-    request.session['cart'] = cart
     return redirect('core:cart')
 
-def checkout(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        return redirect('core:cart')
 
-    message_lines = ["Here are the products I want to order:"]
-    for item in cart.values():
-        line = f"{item['name']} - {item['quantity']} x ${item['price']}"
-        message_lines.append(line)
-    
-    message = "\n".join(message_lines)
-    telegram_base_url = "https://t.me/addisabeba7"
-    params = {
-        'url': '',  # Optional: add your website or product page URL here if needed
-        'text': message
-    }
-    telegram_url = f"{telegram_base_url}?{urllib.parse.urlencode(params)}"
-    return redirect(telegram_url)
+def checkout(request):
+    """Handle checkout process and finalize the order."""
+    if request.method == 'POST':
+        fullname = request.POST.get('fullname')
+        address = request.POST.get('address')
+        city = request.POST.get('city', '')
+        phone_number = request.POST.get('phone_number')
+        
+        cart_order = get_or_create_cart_order(request)
+        if not cart_order:
+            return redirect('core:cart')
+
+        order = Order.objects.create(
+            fullname=fullname,
+            address=address,
+            city=city,
+            phone_number=phone_number,
+            complete=False,
+            state='order'
+        )
+
+        total_amount = 0
+        for item in OrderItem.objects.filter(order=cart_order):
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.price,
+                options=item.options
+            )
+            total_amount += item.product.price * item.quantity
+
+        order.total_amount = total_amount
+        order.save()
+
+        cart_order.delete()
+
+        messages.success(request, 'Order placed successfully!')
+        return redirect('core:order_confirmation', order_id=order.id)
+
+    return render(request, 'core/checkout.html')
+
 
 def download_backup(request):
-    # Define paths to backup files
+    """Generate and download a backup of the database."""
     backup_dir = os.path.join(settings.BASE_DIR, 'backups')
     os.makedirs(backup_dir, exist_ok=True)
     db_backup_file = os.path.join(backup_dir, 'backup.json')
 
-    # Create a new database backup
     management.call_command('dumpdata', '--output', db_backup_file)
     
-    # Serve the backup JSON file for download
     if os.path.exists(db_backup_file):
         with open(db_backup_file, 'rb') as f:
             response = HttpResponse(f.read(), content_type='application/json')
@@ -157,3 +154,7 @@ def download_backup(request):
             return response
     else:
         return HttpResponse("Backup file not found", status=404)
+
+def order_confirmation(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'core/order_confirmation.html', {'order': order})

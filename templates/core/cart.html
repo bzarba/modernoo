@@ -9,7 +9,7 @@
     <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
 </head>
 
-<body class="px-4 pt-8 pb-8 h-screen bg-bottom" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
+<body class="px-4 pt-8 pb-8 min-h-screen bg-bottom w-screen" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
     <!-- Topbar -->
     {% include "partials/topbar.html" %}
 
@@ -17,16 +17,16 @@
 
     {% if cart %}
     <ul role="list" class="divide-y divide-gray-200">
-        {% for product_id, item in cart.items %}
+        {% for item in cart %}
         <li class="flex border rounded-md mb-4">
             <div class="h-28 w-28 flex-shrink-0 overflow-hidden rounded-md rounded-r-none border border-gray-200">
-                <img src="{{ item.image }}" alt="{{ item.name }}" class="h-full w-full object-cover object-center">
+                <img src="{{ item.product.image.url }}" alt="{{ item.name }}" class="h-full w-full ">
             </div>
 
             <div class="py-4 px-4 flex flex-1 flex-col">
                 <div class="flex justify-between text-base font-medium text-gray-900">
                     <h3>
-                        <a href="#">{{ item.name }}</a>
+                        <a href="#">{{ item.product.name }} {{item.product.brand.name}} {{item.product.car_model.name}}</a>
                     </h3>
                     <p class="ml-4">${{ item.price }}</p>
                 </div>
@@ -44,13 +44,13 @@
                     {% endif %}
                 </div>
                 <div class="flex flex-1 items-center justify-between text-sm mt-2">
-                    <form action="{% url 'core:update_cart' product_id %}" method="post" class="flex items-center">
+                    <form action="{% url 'core:update_cart' item.product.id %}" method="post" class="flex items-center">
                         {% csrf_token %}
                         <label for="quantity_{{ product_id }}" class="sr-only">Qty</label>
                         <input type="number" name="quantity" id="quantity_{{ product_id }}" value="{{ item.quantity }}" min="1" class="input input-bordered input-sm text-center w-16">
                         <button class="btn btn-sm btn-neutral text-white ml-2" type="submit">Update</button>
                     </form>
-                    <form action="{% url 'core:remove_from_cart' product_id %}" method="post">
+                    <form action="{% url 'core:remove_from_cart' item.product.id %}" method="post">
                         {% csrf_token %}
                         <button class="btn btn-sm btn-error text-white" type="submit">Remove</button>
                     </form>
@@ -63,9 +63,44 @@
     <p class="text-center text-gray-500">Your cart is empty.</p>
     {% endif %}
 
-    <div class="fixed w-full bottom-0 left-0 p-4 bg-white shadow-md">
-        <a class="btn btn-neutral w-full" href="{% url 'core:checkout' %}">Checkout</a>
+    <div class="fixed w-full bottom-0 left-0 p-4 shadow-md">
+        <a class="btn btn-neutral w-full" onclick="my_modal_1.showModal()">Checkout</a>
     </div>
+
+
+    <!-- Checkout Modal -->
+    <dialog id="my_modal_1" class="modal">
+        <div class="modal-box relative w-10/12">
+          <h3 class="text-lg font-bold">Confirm Order</h3>
+          <form method="post" action="{% url 'core:checkout' %}">
+            {% csrf_token %}
+            <div>
+                <label for="fullname">Full Name</label>
+                <input type="text" name="fullname" id="fullname" required>
+            </div>
+            <div>
+                <label for="address">Address</label>
+                <input type="text" name="address" id="address" required>
+            </div>
+            <div>
+                <label for="city">City</label>
+                <input type="text" name="city" id="city">
+            </div>
+            <div>
+                <label for="phone_number">Phone Number</label>
+                <input type="text" name="phone_number" id="phone_number" required>
+            </div>
+            <button type="submit">Checkout</button>
+        </form>
+        
+          <div class="modal-action">
+            <form method="dialog">
+              <!-- if there is a button in form, it will close the modal -->
+              <button class="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
 </body>
 
 </html>

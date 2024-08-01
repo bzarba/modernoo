@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+</head>
+<body>
+    <h1 class="text-2xl font-bold">Checkout</h1>
+    <form method="post" action="{% url 'core:checkout' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="fullname" class="block">Full Name:</label>
+            <input type="text" id="fullname" name="fullname" class="input" required>
+        </div>
+        <div class="mb-4">
+            <label for="address" class="block">Address:</label>
+            <textarea id="address" name="address" class="input" rows="4" required></textarea>
+        </div>
+        <div class="mb-4">
+            <label for="city" class="block">City:</label>
+            <input type="text" id="city" name="city" class="input">
+        </div>
+        <div class="mb-4">
+            <label for="phone_number" class="block">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" class="input" required>
+        </div>
+        <button type="submit" class="btn btn-accent">Place Order</button>
+    </form>
+</body>
+</html>

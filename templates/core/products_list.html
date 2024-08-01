@@ -9,159 +9,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ brand.name }} - {{ model.name }} - {{ year }}</title>
     <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
     <style>
-        html,
-        body {
-            height: 100vh;
-            overflow-y: hidden;
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
         }
-        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
         .parent {
-            overflow-y: scroll;
-            height: 100vh;
+            flex: 1;
+            overflow-y: auto;
             scroll-snap-type: y mandatory;
-            width: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        .parent.reduced {
-            width: 80% !important;
-        }
-        
-        .scroll-box {
             height: 100vh;
+            background-color: black;
+        }
+        .product {
             scroll-snap-align: start;
-            position: relative;
         }
-        
-        .show {
-            display: block !important;
+        .product img {
+            height: 100vh;
+            object-fit: cover;
+            width: 100%;
         }
-        
-        .vertical-menu img {
-            transition: opacity 0.3s;
+        #vertical-menu {
+            width: 20%;
+            background-color: #1a202c;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
         }
-        
-        .vertical-menu img:hover {
-            opacity: 0.7;
+        .modal {
+            overflow: hidden;
         }
-        
-        .swipe-arrow {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            font-size: 2rem;
-            color: red;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-        
-        .show-arrow {
-            opacity: 1;
+        .modal-box {
+            max-height: 90vh;
+            overflow-y: auto;
+            max-width: 90vw;
         }
     </style>
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
 </head>
 
 <body>
-    <section class="parent reduced h-screen lg:max-w-lg lg:mx-auto" id="parent-section reduced">
-        <!-- Messages -->
-        {% if messages %} {% for message in messages %} 
-        
-        {% endfor %} {% endif %}
-        <!-- Topbar -->
-        {% include "partials/topbar.html" %}
+    {% include 'partials/topbar.html' %}
 
-        <!-- Vertical menu for product navigation -->
-        <div id="vertical-menu" class="vertical-menu  fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
+    <div class="container">
+        <div class="parent">
             {% for product in products %}
-            <img class="rounded-md mb-2 h-[15vh] w-full object-cover" src="{{product.image.url}}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')"> {% endfor %}
-        </div>
+            <article class="product relative" data-product-id="{{ product.id }}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
 
-     
-
-        <!-- Display products for the year -->
-        {% for product in products %}
-        <div class="product scroll-box relative gap-4 h-screen" data-product-id='{{ product.id }}'>
-            <img class="w-full h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
-
-            <div class="absolute bottom-8 left-0 right-0 p-4 text-white">
-                <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
-                <p class="font-bold mb-2">{{ product.price }} $</p>
-                <div class="flex gap-2">
-                    <button class="btn btn-primary w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
-                    <button class="btn btn-primary w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">
-                        Description
-                    </button>
+                <div class="absolute bottom-8 left-0 right-0 p-4 text-white">
+                    <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
+                    <p class="font-bold mb-2">{{ product.price }} $</p>
+                    <div class="flex gap-2">
+                        <button class="btn btn-primary w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
+                        <button class="btn btn-primary w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
+                    </div>
                 </div>
+
+                <!-- Modal for buying the product -->
+                <dialog id="productBuy{{ product.id }}" class="modal" aria-labelledby="buyModalLabel{{ product.id }}" aria-modal="true" role="dialog">
+                    <div class="modal-box">
+                        <h3 id="buyModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
+                        <div class="mt-4">
+                            <!-- Form for adding product to cart -->
+                            <!-- Form for adding product to cart -->
+                            <form  hx-post="{% url 'core:edit_cart' %}"  hx-swap="outerHTML" hx-target="#cart-number">
+                                {% csrf_token %}
+                                <div class="flex gap-4 items-center mb-2">
+                                    <label class="font-bold inline-block w-20" for="quantity{{ product.id }}">Quantity</label>
+                                    <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-20 input-bordered" value="1" min="1">
+                                </div>
+                                {% for option in product.options.all %}
+                                    <div class="flex gap-4 items-center mb-2">
+                                        <label class="font-bold inline-block w-20" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                        <select class="select select-sm select-bordered w-20" name="option_{{ option.name }}" id="option__{{ option.name }}">
+                                            {% for choice in option.choices|split:"," %}
+                                                <option value="{{ choice }}">{{ choice }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endfor %}
+                                <input type="hidden" name="year" value="{{ year }}">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <button type="submit" class="btn btn-accent">Add to Cart</button>
+                            </form>
+                        </div>
+                        <div class="modal-action mt-0">
+                            <button class="btn" type="button" onclick="document.getElementById('productBuy{{ product.id }}').close()">Close</button>
+                        </div>
+                    </div>
+                </dialog>
+
+                <!-- Modal for product description -->
+                <dialog id="productInfo{{ product.id }}" class="modal" aria-labelledby="infoModalLabel{{ product.id }}" aria-modal="true" role="dialog">
+                    <div class="modal-box">
+                        <h3 id="infoModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
+                        <p class="py-4">{{ product.description }}</p>
+                        <div class="modal-action">
+                            <button class="btn" type="button" onclick="document.getElementById('productInfo{{ product.id }}').close()">Close</button>
+                        </div>
+                    </div>
+                </dialog>
+            </article>
+            {% empty %}
+                <p class="text-gray-600 text-center mt-4">No products found for this year.</p>
+            {% endfor %}
+        </div>
+        <nav id="vertical-menu">
+            <div class="p-2">
+                {% for product in products %}
+                <img class="border rounded-md mb-2 h-[15vh] w-full object-cover cursor-pointer" src="{{ product.image.url }}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')">
+                {% endfor %}
             </div>
-
-            
-
-            <dialog id="productBuy{{ product.id }}" class="modal">
-                <div class="modal-box">
-                    <form method="dialog">
-                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                      </form>
-                    <h3 class="text-lg font-bold">{{ product.name }}</h3>
-                    <div class="modal-action">
-                        <!-- Form for adding product to cart -->
-                        <form class="w-full" hx-get="{% url 'core:edit_cart' %}" hx-target="#atc_{{product.id}}" hx-swap="outerHTML">
-                            {% for option in product.options.all %}
-                            <div class="flex gap-4 items-center mb-2">
-                                <label class="font-bold" for="option__{{ option.name }}">{{ option.name|title }}</label>
-                                <select class="select select-sm select-bordered" name="option__{{ option.name }}" id="option__{{ option.name }}">
-                                    {% for choice in option.choices|split:"," %}
-                                    <option value="{{ choice }}">{{ choice }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endfor %}
-                            <input type="number" name="quantity" id="quantity" class="input w-16 input-bordered" value="1">
-                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                            <button id="atc_{{product.id}}" type="submit" class="btn btn-accent">Add to Cart</button>
-                        </form>
-                        <!-- Form for closing the dialog -->
-                        <label class="modal-backdrop" for="my_modal_7">Close</label>
-
-                    </div>
-                </div>
-            </dialog>
-            
-            
-            <dialog id="productInfo{{ product.id }}" class="modal">
-                <div class="modal-box">
-                    <h3 class="text-lg font-bold">{{ product.name }}</h3>
-                    <p class="py-4">{{ product.description }}</p>
-                    <div class="modal-action">
-                        <form method="dialog">
-                            <button class="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
-        </div>
-        {% empty %}
-        <p class="text-gray-600 text-center mt-4 col-span-2">No products found for this year.</p>
-        {% endfor %}
-
-        <div class="swipe-arrow" id="swipe-arrow">
-            <img class="w-16 animate-bounce" src="{% static 'imgs/rotate.png' %}" alt="">
-        </div>
-    </section>
+        </nav>
+    </div>
 
     <script>
         function scrollToProduct(productId) {
             const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
-            if (productElement) {
-                productElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            if (productElement)  {
+                productElement.scrollIntoView({ behavior: 'smooth' });
             }
         }
-
-    
     </script>
 </body>
 

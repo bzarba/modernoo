@@ -1,0 +1,325 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ brand.name }} - {{ model.name }} - {{ year }}</title>
+    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"> <!-- External CSS for custom styles -->
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+</head>
+
+<body>
+
+    <div class="w-screen h-screen flex">
+        <nav id="vertical-menu" class="vertical-menu fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
+            {% for product in products %}
+                <img class="rounded-md mb-2 h-[15vh] w-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')">
+            {% endfor %}
+        </nav>
+    </div>
+
+
+    <section class="parent reduced h-screen lg:max-w-lg lg:mx-auto" id="parent-section">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <!-- Render message -->
+            {% endfor %}
+        {% endif %}
+
+        <!-- Topbar -->
+        {% include "partials/topbar.html" %}
+
+        <!-- Vertical menu for product navigation -->
+        <nav id="vertical-menu" class="vertical-menu fixed top-0 right-0 bottom-0 w-[20vw] z-50 bg-gray-900 p-2">
+            {% for product in products %}
+                <img class="rounded-md mb-2 h-[15vh] w-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')">
+            {% endfor %}
+        </nav>
+
+        <!-- Display products for the year -->
+        <main>
+            {% for product in products %}
+                <article class="product scroll-box relative gap-4 h-screen" data-product-id="{{ product.id }}">
+                    <img class="w-full h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
+
+                    <div class="absolute bottom-8 left-0 right-0 p-4 text-white">
+                        <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
+                        <p class="font-bold mb-2">{{ product.price }} $</p>
+                        <div class="flex gap-2">
+                            <button class="btn btn-primary w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
+                            <button class="btn btn-primary w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
+                        </div>
+                    </div>
+
+                    <!-- Modal for buying the product -->
+                    <dialog id="productBuy{{ product.id }}" class="modal">
+                        <div class="modal-box">
+                            <form method="dialog">
+                                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                            </form>
+                            <h3 class="text-lg font-bold">{{ product.name }}</h3>
+                            <div class="modal-action">
+                                <!-- Form for adding product to cart -->
+                                <form class="w-full" hx-get="{% url 'core:edit_cart' %}" hx-target="#atc_{{ product.id }}" hx-swap="outerHTML">
+                                    {% for option in product.options.all %}
+                                        <div class="flex gap-4 items-center mb-2">
+                                            <label class="font-bold" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                            <select class="select select-sm select-bordered" name="option__{{ option.name }}" id="option__{{ option.name }}">
+                                                {% for choice in option.choices|split:"," %}
+                                                    <option value="{{ choice }}">{{ choice }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endfor %}
+                                    <input type="number" name="quantity" id="quantity" class="input w-16 input-bordered" value="1">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button id="atc_{{ product.id }}" type="submit" class="btn btn-accent">Add to Cart</button>
+                                </form>
+                                <!-- Form for closing the dialog -->
+                                <label class="modal-backdrop" for="my_modal_7">Close</label>
+                            </div>
+                        </div>
+                    </dialog>
+
+                    <!-- Modal for product description -->
+                    <dialog id="productInfo{{ product.id }}" class="modal">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">{{ product.name }}</h3>
+                            <p class="py-4">{{ product.description }}</p>
+                            <div class="modal-action">
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </dialog>
+                </article>
+            {% empty %}
+                <p class="text-gray-600 text-center mt-4 col-span-2">No products found for this year.</p>
+            {% endfor %}
+        </main>
+
+        <div class="swipe-arrow" id="swipe-arrow">
+            <img class="w-16 animate-bounce" src="{% static 'imgs/rotate.png' %}" alt="Swipe Arrow">
+        </div>
+    </section>
+
+    <script>
+        function scrollToProduct(productId) {
+            const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
+            if (productElement) {
+                productElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+
+</html>
+
+
+import random
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from .models import Brand, CarModel, Product
+import urllib.parse
+from django.core import management
+from django.conf import settings
+import os
+from datetime import datetime
+from django.contrib import messages
+import csv
+import requests
+from telethon import TelegramClient
+from telethon.tl.types import InputPeerUser
+from telethon.errors import SessionPasswordNeededError
+
+
+def home(request):
+    brands = Brand.objects.all()
+    return render(request, 'core/home.html', {'brands': brands})
+
+def brands_list(request):
+    brands = Brand.objects.all()
+    return render(request, 'partials/brands.html', {'brands': brands})
+
+def models_list(request, brand_slug):
+    brand = get_object_or_404(Brand, slug=brand_slug)
+    models = brand.models.all()  # Retrieve models associated with the brand
+    context = {
+        'brand': brand,
+        'models': models,
+    }
+    return render(request, 'partials/models.html', context)
+
+def years_list(request, brand_slug, model_slug):
+    brand = get_object_or_404(Brand, slug=brand_slug)
+    model = get_object_or_404(CarModel, slug=model_slug, brand=brand)
+    
+    # Get the current year
+    current_year = datetime.now().year
+
+    # Generate a list of years from 1990 to the current year
+    years = list(range(1990, current_year + 1))
+    years.reverse()
+
+    context = {
+        'brand': brand,
+        'model': model,
+        'years': years,
+    }
+    return render(request, 'partials/years.html', context)
+
+def products_list(request, brand_slug, model_slug, year):
+    # Retrieve the brand and model using slugs
+    brand = get_object_or_404(Brand, slug=brand_slug)
+    model = get_object_or_404(CarModel, slug=model_slug, brand=brand)
+
+    # Filter products by the specified year
+    products = Product.objects.filter(
+        car_model=model,
+        years__contains=str(year)
+    )
+    
+    # print(products.all()[1].options.first())
+
+    context = {
+        'brand': brand,
+        'model': model,
+        'year': year,
+        'products': products,
+    }
+
+    return render(request, 'core/products_list.html', context)
+
+def edit_cart(request: HttpRequest):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = request.POST.get('quantity')
+        options = {key: value for key, value in request.POST.items() if key.startswith('option__')}
+
+        product = get_object_or_404(Product, pk=product_id)
+        cart = request.session.get('cart', {})
+
+        cart_item = cart.get(str(product_id))
+        if cart_item:
+            cart_item['quantity'] += int(quantity)
+            cart_item['options'] = options
+        else:
+            cart[str(product_id)] = {
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': int(quantity),
+                'options': options,
+                'image': product.image.url if product.image else ''
+            }
+
+        request.session['cart'] = cart
+        # messages.add_message(request, message='Added Successfully')
+        return redirect(request.META.get('HTTP_REFERER'))  # Redirect to the referring page
+    else:
+        return HttpResponse("Method not allowed", status=405)
+
+
+def cart(request):
+    cart = request.session.get('cart', {})
+    context = {
+        'cart': cart,
+    }
+    return render(request, 'core/cart.html', context)
+
+def remove_from_cart(request, product_id):
+    product_id = str(product_id)
+    cart = request.session.get('cart', {})
+
+    if product_id in cart:
+        del cart[product_id]
+        request.session['cart'] = cart
+
+    return redirect('core:cart')
+
+def update_cart(request, product_id):
+    product_id = str(product_id)
+    cart = request.session.get('cart', {})
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity < 1:
+            del cart[product_id]
+        else:
+            cart[product_id]['quantity'] = quantity
+
+    request.session['cart'] = cart
+    return redirect('core:cart')
+
+def download_backup(request):
+    # Define paths to backup files
+    backup_dir = os.path.join(settings.BASE_DIR, 'backups')
+    os.makedirs(backup_dir, exist_ok=True)
+    db_backup_file = os.path.join(backup_dir, 'backup.json')
+
+    # Create a new database backup
+    management.call_command('dumpdata', '--output', db_backup_file)
+    
+    # Serve the backup JSON file for download
+    if os.path.exists(db_backup_file):
+        with open(db_backup_file, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename=backup.json'
+            return response
+    else:
+        return HttpResponse("Backup file not found", status=404)
+
+def checkout(request):
+    cart = request.session.get('cart', {})
+    if not cart:
+        return redirect('core:cart')
+
+    # Create a temporary file path
+    randint = random.randint(100000, 999999)
+    temp_file_path = os.path.join(settings.BASE_DIR, f'temp_checkout_{randint}.csv')
+    
+    # Create and save the CSV file
+    with open(temp_file_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Product Name', 'Quantity', 'Price', 'Option', 'Total'])
+
+        total_amount = 0
+        for item in cart.values():
+            # Extract options and format them as a single string
+            options_str = ', '.join([f"{key[7:]}: {value}" for key, value in item['options'].items()])
+            total = item['quantity'] * item['price']
+            total_amount += total
+            writer.writerow([item['name'], item['quantity'], item['price'], options_str, total])
+        
+        # Optionally add a final total row
+        writer.writerow([])
+        writer.writerow(['', '', '', 'Grand Total', total_amount])
+
+    # Send the CSV file to Telegram
+    send_file_to_telegram(temp_file_path)
+    
+    # Remove the temporary file
+    os.remove(temp_file_path)
+    
+    return HttpResponse("Checkout CSV sent to Telegram!")
+
+def send_file_to_telegram(file_path):
+    bot_token = '7093303476:AAE5i7V2DBL1k4A3rgrJ5UBcec3nXBOUWoo'  # Replace with your bot token
+    chat_id = '7093303476'  # Replace with your chat ID
+
+    url = f'https://api.telegram.org/bot{bot_token}/sendDocument'
+    with open(file_path, 'rb') as file:
+        payload = {
+            'chat_id': chat_id,
+            'caption': 'Here is the checkout CSV file with product options.'
+        }
+        files = {
+            'document': file
+        }
+        response = requests.post(url, data=payload, files=files)
+        response.raise_for_status()  # Raise an exception for HTTP errors
