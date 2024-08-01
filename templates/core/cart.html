@@ -74,23 +74,37 @@
           <h3 class="text-lg font-bold">Confirm Order</h3>
           <form method="post" action="{% url 'core:checkout' %}">
             {% csrf_token %}
-            <div>
-                <label for="fullname">Full Name</label>
-                <input type="text" name="fullname" id="fullname" required>
+            <div class="form-control mb-4">
+                <label for="fullname" class="label">
+                    <span class="label-text">Full Name</span>
+                </label>
+                <input type="text" name="fullname" id="fullname" required
+                    class="input input-bordered">
             </div>
-            <div>
-                <label for="address">Address</label>
-                <input type="text" name="address" id="address" required>
+            <div class="form-control mb-4">
+                <label for="address" class="label">
+                    <span class="label-text">Address</span>
+                </label>
+                <input type="text" name="address" id="address" required
+                    class="input input-bordered">
             </div>
-            <div>
-                <label for="city">City</label>
-                <input type="text" name="city" id="city">
+            <div class="form-control mb-4">
+                <label for="city" class="label">
+                    <span class="label-text">City</span>
+                </label>
+                <input type="text" name="city" id="city"
+                    class="input input-bordered">
             </div>
-            <div>
-                <label for="phone_number">Phone Number</label>
-                <input type="text" name="phone_number" id="phone_number" required>
+            <div class="form-control mb-4">
+                <label for="phone_number" class="label">
+                    <span class="label-text">Phone Number</span>
+                </label>
+                <input type="text" name="phone_number" id="phone_number" required
+                    class="input input-bordered">
             </div>
-            <button type="submit">Checkout</button>
+            <button type="submit" class="btn btn-primary absolute bottom-6">
+                Checkout
+            </button>
         </form>
         
           <div class="modal-action">
