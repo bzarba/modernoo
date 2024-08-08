@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<!-- core/product_detail.html -->
+<div class="bg-white hidden lg:block">
+    <div class="flex flex-col lg:flex-row ">
+        <!-- Product Image -->
+        <div class="w-full lg:w-1/2 mb-4 lg:mb-0 h-[90vh]">
+            <img class="h-full w-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg">
+        </div>
+        
+        <!-- Product Details -->
+        <div class="w-full flex flex-col justify-center lg:w-1/2 lg:pl-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
+            <p class="text-lg text-gray-700 mb-6">{{ product.description }}</p>
+            <p class="text-2xl font-semibold text-gray-900 mb-4">${{ product.price }}</p>
+            <form hx-post="{% url 'core:edit_cart' %}" hx-target="#cart-counter-desktop" class="mt-4">
+            <!-- Available Options -->
+            {% if product.options.all %}
+                <div class="mb-6">
+                    {% for option in product.options.all %}
+                        <label for="option-{{ option.id }}" class="block text-gray-700 font-medium mb-2">{{ option.name|title }}</label>
+                        <select id="option-{{ option.id }}" name="option_{{ option.id }}" class="select select-bordered w-full mb-4">
+                            {% for choice in option.get_choices_list %}
+                                <option value="{{ choice }}">{{ choice|title }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Quantity Selector -->
+            <div class="mb-6">
+                <label for="quantity" class="block text-gray-700 font-medium mb-2">Quantity</label>
+                <input id="quantity" name="quantity" type="number" value="1" min="1" class="input input-bordered w-full">
+            </div>
+
+            <!-- Add to Cart Button -->
+
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn btn-accent w-full">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,147 +1,144 @@
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_filters %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}{{ brand.name }} - {{ model.name }} - {{ year }}{% endblock title %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ brand.name }} - {{ model.name }} - {{ year }}</title>
-    <link href="{% static 'css/styles.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
-        .container {
-            display: flex;
-            height: 100vh;
-        }
-        .parent {
-            flex: 1;
-            overflow-y: auto;
-            scroll-snap-type: y mandatory;
-            height: 100vh;
-            background-color: black;
-        }
-        .product {
-            scroll-snap-align: start;
-        }
-        .product img {
-            height: 100vh;
-            object-fit: cover;
-            width: 100%;
-        }
-        #vertical-menu {
-            width: 20%;
-            background-color: #1a202c;
-            overflow-y: auto;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-        }
-        .modal {
-            overflow: hidden;
-        }
-        .modal-box {
-            max-height: 90vh;
-            overflow-y: auto;
-            max-width: 90vw;
-        }
-    </style>
-</head>
+{% block content %}
+<style>
+    .parent {
+        flex: 1;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+        height: 100vh;
+        background-color: black;
+    }
+    .product {
+        scroll-snap-align: start;
+    }
+    .product img {
+        height: 100vh;
+        object-fit: cover;
+        width: 100%;
+    }
+    #vertical-menu {
+        width: 20%;
+        background-color: #1a202c;
+        overflow-y: auto;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+    .modal {
+        overflow: hidden;
+    }
+    .modal-box {
+        max-height: 90vh;
+        overflow-y: auto;
+        max-width: 90vw;
+    }
+</style>
 
-<body>
-    {% include 'partials/topbar.html' %}
+<div class="container md:hidden lg:hidden">
+    <div class="parent">
+        {% for product in products %}
+        <article class="product relative" data-product-id="{{ product.id }}">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
 
-    <div class="container">
-        <div class="parent">
-            {% for product in products %}
-            <article class="product relative" data-product-id="{{ product.id }}">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
-
-                <div class="absolute bottom-12 left-0 right-0 p-4 text-white">
-                    <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
-                    <p class="font-bold mb-2">{{ product.price }} $</p>
-                    <div class="flex gap-2">
-                        <button class="btn bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
-                        <button class="btn btn-neutral w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
-                    </div>
+            <div class="absolute bottom-12 left-0 right-0 p-4 text-white">
+                <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
+                <p class="font-bold mb-2">{{ product.price }} $</p>
+                <div class="flex gap-2">
+                    <button class="btn bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
+                    <button class="btn btn-neutral w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
                 </div>
+            </div>
 
-                <!-- Modal for buying the product -->
-                <dialog id="productBuy{{ product.id }}" class="modal" aria-labelledby="buyModalLabel{{ product.id }}" aria-modal="true" role="dialog">
-                    <div class="modal-box">
-                        <h3 id="buyModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
-                        <div class="mt-4">
-                            <!-- Form for adding product to cart -->
-                            <!-- Form for adding product to cart -->
-                            <form  hx-post="{% url 'core:edit_cart' %}"  hx-swap="outerHTML" hx-target="#cart-number">
-                                {% csrf_token %}
+            <!-- Modal for buying the product -->
+            <dialog id="productBuy{{ product.id }}" class="modal" aria-labelledby="buyModalLabel{{ product.id }}" aria-modal="true" role="dialog">
+                <div class="modal-box">
+                    <h3 id="buyModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
+                    <div class="mt-4">
+                        <!-- Form for adding product to cart -->
+                        <!-- Form for adding product to cart -->
+                        <form  hx-post="{% url 'core:edit_cart' %}"  hx-swap="outerHTML" hx-target="#cart-number">
+                            {% csrf_token %}
+                            <div class="flex gap-4 items-center mb-2">
+                                <label class="font-bold inline-block w-24" for="quantity{{ product.id }}">Quantity</label>
+                                <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-20 input-bordered" value="1" min="1">
+                            </div>
+                            {% for option in product.options.all %}
                                 <div class="flex gap-4 items-center mb-2">
-                                    <label class="font-bold inline-block w-24" for="quantity{{ product.id }}">Quantity</label>
-                                    <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-20 input-bordered" value="1" min="1">
+                                    <label class="font-bold inline-block w-24" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                    <select class="select select-sm select-bordered w-20" name="option_{{ option.name }}" id="option__{{ option.name }}">
+                                        {% for choice in option.choices|split:"," %}
+                                            <option value="{{ choice }}">{{ choice }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                {% for option in product.options.all %}
-                                    <div class="flex gap-4 items-center mb-2">
-                                        <label class="font-bold inline-block w-24" for="option__{{ option.name }}">{{ option.name|title }}</label>
-                                        <select class="select select-sm select-bordered w-20" name="option_{{ option.name }}" id="option__{{ option.name }}">
-                                            {% for choice in option.choices|split:"," %}
-                                                <option value="{{ choice }}">{{ choice }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% endfor %}
-                                <input type="hidden" name="year" value="{{ year }}">
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn w-full  bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white">Add to Cart</button>
-                            </form>
-                        </div>
-                        <div class=" mt-2">
-                            <button class="btn w-full" type="button" onclick="document.getElementById('productBuy{{ product.id }}').close()">Close</button>
-                        </div>
+                            {% endfor %}
+                            <input type="hidden" name="year" value="{{ year }}">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn w-full  bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white">Add to Cart</button>
+                        </form>
                     </div>
-                </dialog>
-
-                <!-- Modal for product description -->
-                <dialog id="productInfo{{ product.id }}" class="modal" aria-labelledby="infoModalLabel{{ product.id }}" aria-modal="true" role="dialog">
-                    <div class="modal-box">
-                        <h3 id="infoModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
-                        <p class="py-4">{{ product.description }}</p>
-                        <div class="modal-action">
-                            <button class="btn" type="button" onclick="document.getElementById('productInfo{{ product.id }}').close()">Close</button>
-                        </div>
+                    <div class=" mt-2">
+                        <button class="btn w-full" type="button" onclick="document.getElementById('productBuy{{ product.id }}').close()">Close</button>
                     </div>
-                </dialog>
-            </article>
-            {% empty %}
-                <div class="h-screen bg-white grid place-content-center">
-                    <img src="{% static 'imgs/not-found.webp' %}" alt="">
-                    <p class="block text-gray-800 text-xl font-bold px-4 text-center mt-4">No products found for this year.</p>
                 </div>
+            </dialog>
+
+            <!-- Modal for product description -->
+            <dialog id="productInfo{{ product.id }}" class="modal" aria-labelledby="infoModalLabel{{ product.id }}" aria-modal="true" role="dialog">
+                <div class="modal-box">
+                    <h3 id="infoModalLabel{{ product.id }}" class="text-lg font-bold">{{ product.name }}</h3>
+                    <p class="py-4">{{ product.description }}</p>
+                    <div class="modal-action">
+                        <button class="btn" type="button" onclick="document.getElementById('productInfo{{ product.id }}').close()">Close</button>
+                    </div>
+                </div>
+            </dialog>
+        </article>
+        {% empty %}
+            <div class="h-screen bg-white grid place-content-center">
+                <img src="{% static 'imgs/not-found.webp' %}" alt="">
+                <p class="block text-gray-800 text-xl font-bold px-4 text-center mt-4">No products found for this year.</p>
+            </div>
+        {% endfor %}
+    </div>
+    <nav id="vertical-menu">
+        <div class="p-2">
+            {% for product in products %}
+            <img class="border rounded-md mb-2 h-[15vh] w-full object-cover cursor-pointer" src="{{ product.image.url }}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')">
             {% endfor %}
         </div>
-        <nav id="vertical-menu">
-            <div class="p-2">
-                {% for product in products %}
-                <img class="border rounded-md mb-2 h-[15vh] w-full object-cover cursor-pointer" src="{{ product.image.url }}" alt="{{ product.name }}" data-product-id="{{ product.id }}" loading="lazy" onclick="scrollToProduct('{{ product.id }}')">
-                {% endfor %}
+    </nav>
+</div>
+
+<!-- Products List For Desktop -->
+<section class="bg-white px-8">
+    <h2 class="text-center font-bold text-3xl mb-2">Search Results</h2>
+    <p class="text-center capitalize">{{brand}} {{model}}  {{year}}</p>
+    <div class="grid grid-cols-4">
+        {% for product in products %}
+        <div class="shadow-md max-w-2xl p-3 rounded-lg dark:bg-gray-600 dark:text-gray-200 mx-auto">
+            <div class="bg-green-200 overflow-hidden h-44 rounded-lg flex justify-center items-center text-gray-700">
+                <img class="object-cover" src="{{product.image.url}}" alt="">
             </div>
-        </nav>
+            <h1 class="text-xl sm:text-2xl font-semibold p-3">{{product.name}}</h1>
+                <a href="/product/{{product.id}}" class="btn btn-accent text-white w-full">View Details</a>
+          </div>
+        {% endfor %}
     </div>
+</section>
 
-    <script>
-        function scrollToProduct(productId) {
-            const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
-            if (productElement)  {
-                productElement.scrollIntoView({ behavior: 'smooth' });
-            }
+<!-- JS -->
+<script>
+    function scrollToProduct(productId) {
+        const productElement = document.querySelector(`.product[data-product-id="${productId}"]`);
+        if (productElement)  {
+            productElement.scrollIntoView({ behavior: 'smooth' });
         }
-    </script>
-</body>
-
-</html>
+    }
+</script>
+{% endblock content %}

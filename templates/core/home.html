@@ -3,7 +3,7 @@
 {% block title %}BMW YES - Home{% endblock %}
 
 {% block content %}
-<div class="relative h-screen lg:max-w-lg lg:mx-auto">
+<div class="relative h-screen lg:max-w-lg lg:mx-auto lg:hidden">
     <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
         <source src="{{request.settings.home_video.url}}" type="video/mp4">
     </video>
@@ -13,4 +13,82 @@
         </div>
     </div>
 </div>
+
+
+{% include 'partials/search_form.html' %}
+
+<section class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-8">Why Choose Our Auto Parts Store?</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Wide Selection of Brands -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-car text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Wide Selection of Brands</h3>
+                    <p class="mt-2 text-gray-600">We offer a vast array of parts from all major car brands to ensure you find exactly what you need.</p>
+                </div>
+            </div>
+
+            <!-- Genuine Parts Guaranteed -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-tools text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Genuine Parts Guaranteed</h3>
+                    <p class="mt-2 text-gray-600">All our parts are authentic and come with a guarantee of quality and durability.</p>
+                </div>
+            </div>
+
+            <!-- Expert Support -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-headset text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Expert Support</h3>
+                    <p class="mt-2 text-gray-600">Our team of experts is available to help you find the right part and answer all your questions.</p>
+                </div>
+            </div>
+
+            <!-- Fast Shipping -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-shipping-fast text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Fast Shipping</h3>
+                    <p class="mt-2 text-gray-600">We offer fast and reliable shipping to get your parts to you as quickly as possible.</p>
+                </div>
+            </div>
+
+            <!-- Competitive Prices -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-tags text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Competitive Prices</h3>
+                    <p class="mt-2 text-gray-600">We provide high-quality parts at prices that won’t break the bank.</p>
+                </div>
+            </div>
+
+            <!-- Easy Returns -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-undo-alt text-orange-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-bold text-gray-800">Easy Returns</h3>
+                    <p class="mt-2 text-gray-600">Hassle-free returns to make your shopping experience stress-free.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock content %}

@@ -1,6 +1,6 @@
 # views.py
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.core import management
@@ -161,3 +161,47 @@ def download_backup(request):
 def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'core/order_confirmation.html', {'order': order})
+
+
+# Desktop View
+
+def get_car_models(request, brand_slug):
+    """Return car models for a given brand in JSON format."""
+    brand = get_object_or_404(Brand, slug=brand_slug)
+    car_models = brand.models.all()
+    
+    models_data = [{"id": model.id, "name": model.name, "slug": model.slug} for model in car_models]
+    
+    return JsonResponse(models_data, safe=False)
+
+def get_years(request):
+    """Return a list of years from 2024 to 1999 in JSON format."""
+    current_year = 2024
+    years = list(range(current_year, 1999 - 1, -1))
+    
+    return JsonResponse(years, safe=False)
+
+def products_list_desktop(request):
+    brand_slug = request.GET.get('brand')
+    model_slug = request.GET.get('carmodel')
+    year = request.GET.get('year')
+
+    products = Product.objects.all()
+
+    if brand_slug:
+        products = products.filter(brand__slug=brand_slug)
+    if model_slug:
+        products = products.filter(car_model__slug=model_slug)
+    if year:
+        products = products.filter(years__contains=year)
+
+    return render(request, 'core/products_list.html', {
+        'products': products,
+        'brand': brand_slug,
+        'model': model_slug,
+        'year': year,
+    })
+    
+def product_detail(request, id):
+    product = get_object_or_404(Product, id=id)
+    return render(request, 'core/product_detail.html', {'product': product})
