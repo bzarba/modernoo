@@ -195,7 +195,7 @@ def products_list_desktop(request):
     if year:
         products = products.filter(years__contains=year)
 
-    return render(request, 'core/products_list.html', {
+    return render(request, 'core/products_list_desktop.html', {
         'products': products,
         'brand': brand_slug,
         'model': model_slug,

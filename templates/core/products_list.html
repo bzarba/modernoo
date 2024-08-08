@@ -6,6 +6,9 @@
 
 {% block content %}
 <style>
+    .container {
+        display: flex;
+    }
     .parent {
         flex: 1;
         overflow-y: auto;
@@ -39,7 +42,7 @@
     }
 </style>
 
-<div class="container md:hidden lg:hidden">
+<div class="container ">
     <div class="parent">
         {% for product in products %}
         <article class="product relative" data-product-id="{{ product.id }}">
@@ -64,13 +67,13 @@
                         <form  hx-post="{% url 'core:edit_cart' %}"  hx-swap="outerHTML" hx-target="#cart-number">
                             {% csrf_token %}
                             <div class="flex gap-4 items-center mb-2">
-                                <label class="font-bold inline-block w-24" for="quantity{{ product.id }}">Quantity</label>
-                                <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-20 input-bordered" value="1" min="1">
+                                <label class="font-bold inline-block w-1/2" for="quantity{{ product.id }}">Quantity</label>
+                                <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-1/2 input-bordered" value="1" min="1">
                             </div>
                             {% for option in product.options.all %}
                                 <div class="flex gap-4 items-center mb-2">
-                                    <label class="font-bold inline-block w-24" for="option__{{ option.name }}">{{ option.name|title }}</label>
-                                    <select class="select select-sm select-bordered w-20" name="option_{{ option.name }}" id="option__{{ option.name }}">
+                                    <label class="font-bold inline-block w-1/2" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                    <select class="select select-sm select-bordered w-1/2" name="option_{{ option.name }}" id="option__{{ option.name }}">
                                         {% for choice in option.choices|split:"," %}
                                             <option value="{{ choice }}">{{ choice }}</option>
                                         {% endfor %}
@@ -114,23 +117,6 @@
         </div>
     </nav>
 </div>
-
-<!-- Products List For Desktop -->
-<section class="bg-white px-8">
-    <h2 class="text-center font-bold text-3xl mb-2">Search Results</h2>
-    <p class="text-center capitalize">{{brand}} {{model}}  {{year}}</p>
-    <div class="grid grid-cols-4">
-        {% for product in products %}
-        <div class="shadow-md max-w-2xl p-3 rounded-lg dark:bg-gray-600 dark:text-gray-200 mx-auto">
-            <div class="bg-green-200 overflow-hidden h-44 rounded-lg flex justify-center items-center text-gray-700">
-                <img class="object-cover" src="{{product.image.url}}" alt="">
-            </div>
-            <h1 class="text-xl sm:text-2xl font-semibold p-3">{{product.name}}</h1>
-                <a href="/product/{{product.id}}" class="btn btn-accent text-white w-full">View Details</a>
-          </div>
-        {% endfor %}
-    </div>
-</section>
 
 <!-- JS -->
 <script>
