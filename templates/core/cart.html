@@ -1,26 +1,18 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "core/base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart</title>
-    <link href="{% static 'css/styles.min.css' %}" rel="stylesheet">
-</head>
+{% block title %}Your Cart{% endblock %}
 
-<body class="px-4 pt-8 pb-8 min-h-screen bg-bottom w-screen" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
-    <!-- Topbar -->
-    {% include "partials/topbar.html" %}
+{% block content %}
+<div class="px-6 pt-8 pb-8 min-h-screen  bg-bottom w-screen" style="background-image: url('https://images.pexels.com/photos/3728311/pexels-photo-3728311.jpeg?auto=compress&cs=tinysrgb&w=600');">
 
-    <h1 class="font-bold text-3xl text-center mb-8 mt-16">Your Cart</h1>
+    <h1 class="font-bold text-3xl text-center mb-8 mt-8 text-white">Your Cart</h1>
 
     {% if cart %}
-    <ul role="list" class="divide-y divide-gray-200">
+    <div role="list" class="divide-gray-200 pb-6">
         {% for item in cart %}
-        <li class="flex border rounded-md mb-4">
-            <div class="h-28 w-28 flex-shrink-0 overflow-hidden rounded-md rounded-r-none border border-gray-200">
-                <img src="{{ item.product.image.url }}" alt="{{ item.name }}" class="h-full w-full ">
+        <div class="flex flex-col border rounded-md mb-4">
+            <div class="w-full h-48 flex-shrink-0 overflow-hidden rounded-md rounded-r-none border border-gray-200">
+                <img src="{{ item.product.image.url }}" alt="{{ item.name }}" class="h-full w-full object-cover">
             </div>
 
             <div class="py-4 px-4 flex flex-1 flex-col">
@@ -34,10 +26,10 @@
                     <!-- Display selected options -->
                     {% if item.options %}
                         <div class="text-gray-600">
-                            <strong>Options:</strong>
-                            <ul>
+                            <strong class="sr-only">Options:</strong>
+                            <ul class="space-y-2">
                                 {% for key, value in item.options.items %}
-                                <li>{{ key|slice:"7:" }}: {{ value }}</li>
+                                <li class="badge badge-neutral">{{ key|slice:"7:" }}: {{ value }}</li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -56,69 +48,52 @@
                     </form>
                 </div>
             </div>
-        </li>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
     {% else %}
     <p class="text-center text-gray-500">Your cart is empty.</p>
     {% endif %}
 
     <div class="fixed w-full bottom-0 left-0 p-4 shadow-md">
         {% if cart %}
-            <a class="btn btn-neutral w-full" onclick="my_modal_1.showModal()">Checkout</a>
+            <a class="btn border-0 border-none text-white bg-gradient-to-br from-orange-500 to-orange-400 w-full" onclick="my_modal_1.showModal()">Checkout</a>
         {% else %}
             <a class="btn btn-neutral w-full" disabled="true" onclick="my_modal_1.showModal()">Checkout</a>
         {% endif %}
     </div>
 
-
-    <!-- Checkout Modal -->
-    <dialog id="my_modal_1" class="modal">
+   <!-- Checkout Modal -->
+   <dialog id="my_modal_1" class="modal">
         <div class="modal-box relative w-10/12">
-          <h3 class="text-lg font-bold">Confirm Order</h3>
-          <form method="post" action="{% url 'core:checkout' %}">
-            {% csrf_token %}
-            <div class="form-control mb-4">
-                <label for="fullname" class="label">
-                    <span class="label-text">Full Name</span>
-                </label>
-                <input type="text" name="fullname" id="fullname" required
-                    class="input input-bordered">
-            </div>
-            <div class="form-control mb-4">
-                <label for="address" class="label">
-                    <span class="label-text">Address</span>
-                </label>
-                <input type="text" name="address" id="address" required
-                    class="input input-bordered">
-            </div>
-            <div class="form-control mb-4">
-                <label for="city" class="label">
-                    <span class="label-text">City</span>
-                </label>
-                <input type="text" name="city" id="city"
-                    class="input input-bordered">
-            </div>
-            <div class="form-control mb-4">
-                <label for="phone_number" class="label">
-                    <span class="label-text">Phone Number</span>
-                </label>
-                <input type="text" name="phone_number" id="phone_number" required
-                    class="input input-bordered">
-            </div>
-            <button type="submit" class="btn btn-primary absolute bottom-6">
-                Checkout
-            </button>
-        </form>
-        
-          <div class="modal-action">
-            <form method="dialog">
-              <!-- if there is a button in form, it will close the modal -->
-              <button class="btn">Close</button>
+            <h3 class="text-lg font-bold mb-4">Confirm Order</h3>
+            <form method="post" action="{% url 'core:checkout' %}">
+                {% csrf_token %}
+                <div class="form-control mb-4">
+                    <label for="fullname" class="sr-only">Full Name</label>
+                    <input type="text" name="fullname" id="fullname" required class="input input-bordered" placeholder="Full Name">
+                </div>
+                <div class="form-control mb-4">
+                    <label for="address" class="sr-only">Address</label>
+                    <input type="text" name="address" id="address" required class="input input-bordered" placeholder="Address">
+                </div>
+                <div class="form-control mb-4">
+                    <label for="city" class="sr-only">City</label>
+                    <input type="text" name="city" id="city" class="input input-bordered" placeholder="City">
+                </div>
+                <div class="form-control mb-4">
+                    <label for="phone_number" class="sr-only">Phone Number</label>
+                    <input type="text" name="phone_number" id="phone_number" required class="input input-bordered" placeholder="Phone Number">
+                </div>
+                <button type="submit" class="btn bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white w-full">Confirm</button>
             </form>
-          </div>
-        </div>
-      </dialog>
-</body>
 
-</html>
+            <div class="mt-2">
+                <form method="dialog">
+                    <button class="btn w-full">Close</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+</div>
+{% endblock content %}

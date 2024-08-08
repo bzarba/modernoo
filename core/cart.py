@@ -1,9 +1,9 @@
-# core/cart.py
-
-from django.shortcuts import get_object_or_404
-from .models import Product, Order, OrderItem
 from django.db.models import Sum
 import json
+from django.shortcuts import get_object_or_404
+
+from .models import Product, Order, OrderItem
+
 
 def get_or_create_cart_order(request):
     """Retrieve or create a cart order based on session."""
@@ -18,6 +18,7 @@ def get_or_create_cart_order(request):
     else:
         return create_cart_order(request)
 
+
 def create_cart_order(request):
     """Create a new cart order and save its ID in the session."""
     cart_order = Order.objects.create(
@@ -28,6 +29,7 @@ def create_cart_order(request):
     )
     request.session['cart_id'] = cart_order.id
     return cart_order
+
 
 def add_to_cart(request, product_id, quantity, options):
     """Add or update an item in the cart."""
@@ -48,10 +50,12 @@ def add_to_cart(request, product_id, quantity, options):
         cart_item.quantity += int(quantity)
     cart_item.save()
 
+
 def remove_from_cart(request, product_id):
     """Remove an item from the cart."""
     cart_order = get_or_create_cart_order(request)
     OrderItem.objects.filter(order=cart_order, product_id=product_id).delete()
+
 
 def update_cart(request, product_id, quantity):
     """Update the quantity of an item in the cart."""
@@ -65,6 +69,7 @@ def update_cart(request, product_id, quantity):
             cart_item.quantity = int(quantity)
             cart_item.save()
 
+
 def get_cart_items(request):
     """Get all items in the cart."""
     cart_order = get_or_create_cart_order(request)
@@ -73,6 +78,11 @@ def get_cart_items(request):
         item.options = json.loads(item.options)
     return cart_items
 
+
 def get_cart_item_count(request):
     """Get the total number of items in the cart."""
-    return get_cart_items(request).aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+    cart_order = get_or_create_cart_order(request)
+    total_quantity = OrderItem.objects.filter(order=cart_order).aggregate(
+        total_quantity=Sum('quantity')
+    )['total_quantity']
+    return total_quantity or 0

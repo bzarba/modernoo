@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BMW YES{% endblock %}</title>
+    <link href="{% static 'css/styles.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a202c;
+            margin: 0;
+            padding: 0;
+        }
+
+        #scrollable-list {
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        #scrollable-list::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+</head>
+
+<body class="overflow-x-hidden">
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <!-- Render your message here -->
+        {% endfor %}
+    {% endif %}
+
+    <!-- Topbar -->
+    {% include "partials/topbar.html" %}
+
+    <!-- Content -->
+    {% block content %}
+    {% endblock content %}
+
+    <!-- <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script> -->
+</body>
+
+</html>

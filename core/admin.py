@@ -3,22 +3,29 @@ from .models import Brand, CarModel, Product, Setting, Option, Order, OrderItem
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 import csv
+import uuid
+
 
 def download_invoice(modeladmin, request, queryset):
     """Generate and download an invoice for the selected orders."""
+    # Create a unique filename with a random ID
+    unique_id = uuid.uuid4().hex
+    filename = f'invoice_{unique_id}.csv'
+
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="invoices.csv"'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     writer = csv.writer(response)
-    writer.writerow(['Order ID', 'Full Name', 'Address', 'City', 'Phone Number', 'Total Amount', 'Product', 'Quantity', 'Price', 'Options'])
+    writer.writerow(['Order ID', 'Product', 'Quantity', 'Price', 'Options', 'Full Name', 'Address', 'City', 'Phone Number', 'Total Amount'])
 
     for order in queryset:
         order_items = OrderItem.objects.filter(order=order)
         for item in order_items:
-            writer.writerow([order.id, order.fullname, order.address, order.city, order.phone_number, order.total_amount, item.product.name, item.quantity, item.price, item.options])
+            writer.writerow([order.id, item.product.name, item.quantity, item.price, item.options, order.fullname, order.address, order.city, order.phone_number, order.total_amount])
 
     return response
 
+download_invoice.short_description = 'Download Invoice for selected Orders'
 download_invoice.short_description = 'Download Invoice for selected Orders' 
 
 

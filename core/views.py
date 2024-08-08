@@ -81,13 +81,13 @@ def cart(request):
     return render(request, 'core/cart.html', {'cart': cart_items})
 
 
-def remove_from_cart(request, product_id):
+def remove_from_cart_view(request, product_id):
     """Remove an item from the cart."""
     remove_from_cart(request, product_id)
     return redirect('core:cart')
 
 
-def update_cart(request, product_id):
+def update_cart_view(request, product_id):
     """Update the quantity of an item in the cart."""
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
@@ -95,6 +95,9 @@ def update_cart(request, product_id):
 
     return redirect('core:cart')
 
+def cart_items_count_view(request):
+    print('c',get_cart_item_count(request))
+    return HttpResponse(get_cart_item_count(request))
 
 def checkout(request):
     """Handle checkout process and finalize the order."""

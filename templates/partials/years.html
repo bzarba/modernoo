@@ -1,5 +1,5 @@
 <!-- partials/years.html -->
-<div hx-target="#scrollable-list" hx-get="{% url 'core:models_list' brand.slug %}" hx-trigger="click" class="btn btn-primary w-full mb-4">
+<div hx-target="#scrollable-list" hx-get="{% url 'core:models_list' brand.slug %}" hx-trigger="click" class="btn btn-neutral  w-24 mb-4">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-2">
         <path d="M9 14L4 9l5-5"/>
         <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>
@@ -8,7 +8,7 @@
 
 <!-- Loop through years and create a link for each -->
 {% for year in years %}
-<a href="{% url 'core:products_list' brand.slug model.slug year %}" class="btn btn-primary flex mb-4" hx-target="#scrollable-list" hx-swap="innerHTML">
+<a href="{% url 'core:products_list' brand.slug model.slug year %}" class="btn btn-neutral w-24 flex mb-4" hx-target="#scrollable-list" hx-swap="innerHTML">
     {{ year }}
 </a>
 {% endfor %}

@@ -1,55 +1,16 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "core/base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMW YES</title>
-    <link href="{% static 'css/styles.min.css' %}" rel="stylesheet">
-    <style>
-        body {
-            background-color: #1a202c;
-            /* Slate 900 from Tailwind CSS */
-            margin: 0;
-            padding: 0;
-        }
-        
-        #scrollable-list {
-            overflow-y: auto;
-            scrollbar-width: none;
-            /* Firefox */
-            -ms-overflow-style: none;
-            /* Internet Explorer and Edge */
+{% block title %}BMW YES - Home{% endblock %}
 
-        }
-        
-        #scrollable-list::-webkit-scrollbar {
-            display: none;
-            /* Chrome, Safari, Opera */
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-
-<body class="overflow-hidden">
-    <!-- Messages -->
-    {% if messages %} {% for message in messages %} {% endfor %} {% endif %}
-    <!-- Topbar -->
-    {% include "partials/topbar.html" %}
-
-    <div class="relative h-screen lg:max-w-lg lg:mx-auto">
-        <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
-            <source src="{{request.settings.home_video.url}}" type="video/mp4">
-        </video>
-        <div class="absolute bottom-[60px] right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4" style="height: 60vh !important; bottom: 60px !important;">
-            <div id="scrollable-list" class="overflow-y-auto" hx-trigger="load" hx-get="{% url 'core:brands_list' %}">
-
-            </div>
+{% block content %}
+<div class="relative h-screen lg:max-w-lg lg:mx-auto">
+    <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
+        <source src="{{request.settings.home_video.url}}" type="video/mp4">
+    </video>
+    <div class="absolute bottom-[60px] right-0 p-4 lg:p-8 h-[50vh] flex flex-col items-center space-y-2 lg:space-y-4" style="height: 60vh !important; bottom: 60px !important;">
+        <div id="scrollable-list" class="overflow-y-auto" hx-trigger="load" hx-get="{% url 'core:brands_list' %}">
+            <!-- Content loaded via htmx will appear here -->
         </div>
     </div>
-
-    <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
-</body>
-
-</html>
+</div>
+{% endblock content %}

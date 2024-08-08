@@ -64,12 +64,12 @@
             <article class="product relative" data-product-id="{{ product.id }}">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
 
-                <div class="absolute bottom-8 left-0 right-0 p-4 text-white">
+                <div class="absolute bottom-12 left-0 right-0 p-4 text-white">
                     <h2 class="text-2xl font-bold mb-2">{{ product.name }}</h2>
                     <p class="font-bold mb-2">{{ product.price }} $</p>
                     <div class="flex gap-2">
-                        <button class="btn btn-primary w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
-                        <button class="btn btn-primary w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
+                        <button class="btn bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white w-6/12" onclick="document.getElementById('productBuy{{ product.id }}').showModal()">Buy Now</button>
+                        <button class="btn btn-neutral w-6/12" onclick="document.getElementById('productInfo{{ product.id }}').showModal()">Description</button>
                     </div>
                 </div>
 
@@ -83,12 +83,12 @@
                             <form  hx-post="{% url 'core:edit_cart' %}"  hx-swap="outerHTML" hx-target="#cart-number">
                                 {% csrf_token %}
                                 <div class="flex gap-4 items-center mb-2">
-                                    <label class="font-bold inline-block w-20" for="quantity{{ product.id }}">Quantity</label>
+                                    <label class="font-bold inline-block w-24" for="quantity{{ product.id }}">Quantity</label>
                                     <input type="number" name="quantity" id="quantity{{ product.id }}" class="input input-sm w-20 input-bordered" value="1" min="1">
                                 </div>
                                 {% for option in product.options.all %}
                                     <div class="flex gap-4 items-center mb-2">
-                                        <label class="font-bold inline-block w-20" for="option__{{ option.name }}">{{ option.name|title }}</label>
+                                        <label class="font-bold inline-block w-24" for="option__{{ option.name }}">{{ option.name|title }}</label>
                                         <select class="select select-sm select-bordered w-20" name="option_{{ option.name }}" id="option__{{ option.name }}">
                                             {% for choice in option.choices|split:"," %}
                                                 <option value="{{ choice }}">{{ choice }}</option>
@@ -98,11 +98,11 @@
                                 {% endfor %}
                                 <input type="hidden" name="year" value="{{ year }}">
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-accent">Add to Cart</button>
+                                <button type="submit" class="btn w-full  bg-gradient-to-br from-orange-500 to-orange-400 border-none text-white">Add to Cart</button>
                             </form>
                         </div>
-                        <div class="modal-action mt-0">
-                            <button class="btn" type="button" onclick="document.getElementById('productBuy{{ product.id }}').close()">Close</button>
+                        <div class=" mt-2">
+                            <button class="btn w-full" type="button" onclick="document.getElementById('productBuy{{ product.id }}').close()">Close</button>
                         </div>
                     </div>
                 </dialog>
@@ -119,7 +119,10 @@
                 </dialog>
             </article>
             {% empty %}
-                <p class="text-gray-600 text-center mt-4">No products found for this year.</p>
+                <div class="h-screen bg-white grid place-content-center">
+                    <img src="{% static 'imgs/not-found.webp' %}" alt="">
+                    <p class="block text-gray-800 text-xl font-bold px-4 text-center mt-4">No products found for this year.</p>
+                </div>
             {% endfor %}
         </div>
         <nav id="vertical-menu">
