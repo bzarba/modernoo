@@ -7,8 +7,9 @@ from django.core import management
 from django.conf import settings
 from datetime import datetime
 import os
+from urllib.parse import urlencode
 
-from .models import Brand, CarModel, Product, Order, OrderItem
+from .models import Brand, CarModel, Product, Order, OrderItem, Setting
 from .cart import get_or_create_cart_order, add_to_cart, remove_from_cart, update_cart, get_cart_items, get_cart_item_count
 
 
@@ -121,6 +122,7 @@ def checkout(request):
         )
 
         total_amount = 0
+        order_summary = ""
         for item in OrderItem.objects.filter(order=cart_order):
             OrderItem.objects.create(
                 order=order,
@@ -130,17 +132,32 @@ def checkout(request):
                 options=item.options
             )
             total_amount += item.product.price * item.quantity
+            order_summary += f"{item.quantity}x {item.product.name} ({item.options})\n"
 
         order.total_amount = total_amount
         order.save()
 
         cart_order.delete()
 
-        messages.success(request, 'Order placed successfully!')
-        return redirect('core:order_confirmation', order_id=order.id)
+        # Prepare the message to be sent via Telegram
+        telegram_username = request.settings.telegram_username  # Make sure to add this in your settings
+        order_message = f"Order ID: {order.id}\n" \
+                        f"Name: {fullname}\n" \
+                        f"Address: {address}, {city}\n" \
+                        f"Phone: {phone_number}\n" \
+                        f"Total: ${total_amount}\n" \
+                        f"Order Summary:\n{order_summary}"
+
+        # Encode the message to fit into a URL
+        encoded_message = urlencode({'text': order_message})
+
+        # Create the Telegram URL
+        telegram_url = f"https://t.me/{telegram_username}?{encoded_message}"
+
+        # Redirect to the Telegram URL
+        return redirect(telegram_url)
 
     return render(request, 'core/checkout.html')
-
 
 def download_backup(request):
     """Generate and download a backup of the database."""
