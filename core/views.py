@@ -129,10 +129,10 @@ def checkout(request):
                 product=item.product,
                 quantity=item.quantity,
                 price=item.price,
-                options=item.options
+                options=item.options[1:-2]
             )
             total_amount += item.product.price * item.quantity
-            order_summary += f"{item.quantity}x {item.product.name} ({item.options})\n"
+            order_summary += f"{item.quantity}x {item.product.name} ({item.options[1:-2]})\n"
 
         order.total_amount = total_amount
         order.save()
